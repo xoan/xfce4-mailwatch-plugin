@@ -219,11 +219,14 @@ mailwatch_button_release_cb(GtkWidget      *w,
                             gpointer        user_data)
 {
     XfceMailwatchPlugin *mwp = user_data;
-    
-    if (evt->x >= w->allocation.x
-        && evt->x < w->allocation.x + w->allocation.width
-        && evt->y >= w->allocation.y
-        && evt->y < w->allocation.y + w->allocation.height)
+    GtkAllocation       allocation;
+
+    gtk_widget_get_allocation (w, &allocation);
+
+    if (evt->x >= allocation.x
+        && evt->x < allocation.x + allocation.width
+        && evt->y >= allocation.y
+        && evt->y < allocation.y + allocation.height)
     {
         switch (evt->button) {
             case MOUSE_BUTTON_LEFT:
@@ -357,9 +360,9 @@ mailwatch_set_size(XfcePanelPlugin     *plugin,
      * shouldn't be needed, since i think the panel button convienence
      * thingo sets them to zero, but we'll leave it for now.  i'm
      * not sure where the '- 2' at the end comes from. */
-    size = wsize - MAX(GTK_WIDGET(mwp->button)->style->xthickness, 
-                       GTK_WIDGET(mwp->button)->style->ythickness) * 2 - 2;
-    
+    size = wsize - MAX(gtk_widget_get_style(GTK_WIDGET(mwp->button))->xthickness,
+                       gtk_widget_get_style(GTK_WIDGET(mwp->button))->ythickness) * 2 - 2;
+
     if(xfce_panel_plugin_get_orientation(plugin) == GTK_ORIENTATION_HORIZONTAL) {
         img_width = -1;
         img_height = size;
@@ -698,8 +701,7 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
     mwp->log_dialog = gtk_dialog_new_with_buttons(_( "Mailwatch log" ),
                                                   GTK_WINDOW(gtk_widget_get_toplevel(widget)),
                                                   GTK_DIALOG_MODAL
-                                                  | GTK_DIALOG_DESTROY_WITH_PARENT
-                                                  | GTK_DIALOG_NO_SEPARATOR,
+                                                  | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   NULL);
     gtk_widget_set_size_request(mwp->log_dialog, 480, 240 );
     g_signal_connect(G_OBJECT(mwp->log_dialog), "response",
@@ -710,7 +712,7 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
     vbox = gtk_vbox_new(FALSE, BORDER/2);
     gtk_container_set_border_width(GTK_CONTAINER(vbox), BORDER/2);
     gtk_widget_show(vbox);
-    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(mwp->log_dialog)->vbox), vbox, TRUE, TRUE, 0);
+    gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(mwp->log_dialog)), vbox, TRUE, TRUE, 0);
 
     scrollw = gtk_scrolled_window_new( NULL, NULL );
     gtk_widget_show( scrollw );
@@ -1023,9 +1025,8 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
 
     dlg = xfce_titled_dialog_new_with_buttons(_("Mail Watcher"),
                 GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(plugin))),
-                GTK_DIALOG_DESTROY_WITH_PARENT |
-                GTK_DIALOG_NO_SEPARATOR, NULL);
-    gtk_button_box_set_layout(GTK_BUTTON_BOX(GTK_DIALOG(dlg)->action_area),
+                GTK_DIALOG_DESTROY_WITH_PARENT, NULL);
+    gtk_button_box_set_layout(gtk_dialog_get_action_area(GTK_DIALOG(dlg)),
                               GTK_BUTTONBOX_EDGE);
     g_signal_connect(G_OBJECT(dlg), "response",
                      G_CALLBACK(mailwatch_dialog_response), mwp);
@@ -1034,13 +1035,13 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
     gtk_window_set_icon_name(GTK_WINDOW(dlg), "xfce4-settings");
 
     btn = gtk_button_new_from_stock(GTK_STOCK_HELP);
-    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dlg)->action_area), btn, FALSE,
+    gtk_box_pack_start(gtk_dialog_get_action_area(GTK_DIALOG(dlg)), btn, FALSE,
                        FALSE, 0);
     g_signal_connect(G_OBJECT(btn), "clicked",
                      G_CALLBACK(mailwatch_help_clicked_cb), mwp);
 
     btn = xfce_mailwatch_custom_button_new(_("_View Log..."), GTK_STOCK_FIND);
-    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dlg)->action_area), btn, FALSE,
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_action_area(dlg)), btn, FALSE,
                        FALSE, 0);
     g_signal_connect(G_OBJECT(btn), "clicked",
                      G_CALLBACK(mailwatch_view_log_clicked_cb), mwp);
@@ -1050,7 +1051,7 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
 
     topvbox = gtk_vbox_new(FALSE, BORDER);
     gtk_container_set_border_width(GTK_CONTAINER(topvbox), BORDER - 2);
-    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dlg)->vbox), topvbox,
+    gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(dlg)), topvbox,
                         TRUE, TRUE, 0);
 
     cfg_page = xfce_mailwatch_get_configuration_page(mwp->mailwatch);

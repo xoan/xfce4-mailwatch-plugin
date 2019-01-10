@@ -1401,15 +1401,14 @@ imap_config_newmailfolders_btn_clicked_cb(GtkWidget *w, gpointer user_data)
     }
 
     dlg = gtk_dialog_new_with_buttons(_("Set New Mail Folders"), toplevel,
-                                      GTK_DIALOG_DESTROY_WITH_PARENT
-                                      | GTK_DIALOG_NO_SEPARATOR,
+                                      GTK_DIALOG_DESTROY_WITH_PARENT,
                                       GTK_STOCK_CLOSE, GTK_RESPONSE_ACCEPT,
                                       NULL);
     imailbox->folder_tree_dialog = dlg;
     topvbox = gtk_vbox_new(FALSE, BORDER/2);
     gtk_container_set_border_width(GTK_CONTAINER(topvbox), BORDER/2);
     gtk_widget_show(topvbox);
-    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dlg)->vbox), topvbox, TRUE, TRUE, 0);
+    gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(dlg)), topvbox, TRUE, TRUE, 0);
     g_signal_connect(G_OBJECT(dlg), "destroy",
                      G_CALLBACK(imap_config_newmailfolders_destroy_cb),
                      imailbox);
@@ -1582,15 +1581,15 @@ imap_config_advanced_btn_clicked_cb(GtkWidget *w, gpointer user_data)
 
     dlg = gtk_dialog_new_with_buttons(_("Advanced IMAP Options"),
             GTK_WINDOW(gtk_widget_get_toplevel(w)),
-            GTK_DIALOG_DESTROY_WITH_PARENT|GTK_DIALOG_NO_SEPARATOR,
+            GTK_DIALOG_DESTROY_WITH_PARENT,
             GTK_STOCK_CLOSE, GTK_RESPONSE_ACCEPT, NULL);
     gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
 
     topvbox = gtk_vbox_new(FALSE, BORDER/2);
     gtk_container_set_border_width(GTK_CONTAINER(topvbox), BORDER/2);
     gtk_widget_show(topvbox);
-    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dlg)->vbox), topvbox, TRUE, TRUE, 0);
-    
+    gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(dlg)), topvbox, TRUE, TRUE, 0);
+
     frame = xfce_gtk_frame_box_new(_("Connection"), &frame_bin);
     gtk_widget_show(frame);
     gtk_box_pack_start(GTK_BOX(topvbox), frame, FALSE, FALSE, 0);
@@ -1598,11 +1597,11 @@ imap_config_advanced_btn_clicked_cb(GtkWidget *w, gpointer user_data)
     vbox = gtk_vbox_new(FALSE, BORDER/2);
     gtk_widget_show(vbox);
     gtk_container_add(GTK_CONTAINER(frame_bin), vbox);
-    
-    combo = gtk_combo_box_new_text();
-    gtk_combo_box_append_text(GTK_COMBO_BOX(combo), _("Use unsecured connection"));
-    gtk_combo_box_append_text(GTK_COMBO_BOX(combo), _("Use SSL/TLS on alternate port"));
-    gtk_combo_box_append_text(GTK_COMBO_BOX(combo), _("Use SSL/TLS via STARTTLS"));
+
+    combo = gtk_combo_box_text_new();
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), _("Use unsecured connection"));
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), _("Use SSL/TLS on alternate port"));
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), _("Use SSL/TLS via STARTTLS"));
 #ifdef HAVE_SSL_SUPPORT
     gtk_combo_box_set_active(GTK_COMBO_BOX(combo), imailbox->auth_type);
 #else

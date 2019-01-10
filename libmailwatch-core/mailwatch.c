@@ -629,12 +629,12 @@ config_run_addedit_window(const gchar *title, GtkWindow *parent,
     if(!mailbox_name) {
         /* add window */
         dlg = gtk_dialog_new_with_buttons(title, parent,
-                GTK_DIALOG_NO_SEPARATOR, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                GTK_DIALOG_DESTROY_WITH_PARENT, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                 GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, NULL);
     } else {
         /* edit window */
         dlg = gtk_dialog_new_with_buttons(title, parent,
-                GTK_DIALOG_NO_SEPARATOR, GTK_STOCK_CLOSE, GTK_RESPONSE_ACCEPT,
+                GTK_DIALOG_DESTROY_WITH_PARENT, GTK_STOCK_CLOSE, GTK_RESPONSE_ACCEPT,
                 NULL);
     }
     gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
@@ -642,8 +642,8 @@ config_run_addedit_window(const gchar *title, GtkWindow *parent,
     topvbox = gtk_vbox_new(FALSE, BORDER/2);
     gtk_container_set_border_width(GTK_CONTAINER(topvbox), BORDER);
     gtk_widget_show(topvbox);
-    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dlg)->vbox), topvbox, TRUE, TRUE, 0);
-    
+    gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(dlg)), topvbox, TRUE, TRUE, 0);
+
     hbox = gtk_hbox_new(FALSE, BORDER/2);
     gtk_widget_show(hbox);
     gtk_box_pack_start(GTK_BOX(topvbox), hbox, FALSE, FALSE, 0);
@@ -769,25 +769,25 @@ config_ask_new_mailbox_type(XfceMailwatch *mailwatch, GtkWindow *parent)
     GList *l;
 
     dlg = gtk_dialog_new_with_buttons(_("Select Mailbox Type"), parent,
-            GTK_DIALOG_NO_SEPARATOR, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+            GTK_DIALOG_DESTROY_WITH_PARENT, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
             GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, NULL);
     gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
 
     topvbox = gtk_vbox_new(FALSE, BORDER/2);
     gtk_container_set_border_width(GTK_CONTAINER(topvbox), BORDER);
     gtk_widget_show(topvbox);
-    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dlg)->vbox), topvbox, TRUE, TRUE, 0);
-    
+    gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(dlg)), topvbox, TRUE, TRUE, 0);
+
     lbl = gtk_label_new(_("Select a mailbox type.  A description of the type will appear below."));
     gtk_label_set_line_wrap(GTK_LABEL(lbl), TRUE);
     gtk_misc_set_alignment(GTK_MISC(lbl), 0.0, 0.5);
     gtk_widget_show(lbl);
     gtk_box_pack_start(GTK_BOX(topvbox), lbl, FALSE, FALSE, 0);
-    
-    combo = gtk_combo_box_new_text();
+
+    combo = gtk_combo_box_text_new();
     for(l = mailwatch->mailbox_types; l; l = l->next) {
         XfceMailwatchMailboxType *mtype = l->data;
-        gtk_combo_box_append_text(GTK_COMBO_BOX(combo), _(mtype->name));
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), _(mtype->name));
     }
     gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
     gtk_widget_show(combo);
