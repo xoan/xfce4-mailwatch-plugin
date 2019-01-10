@@ -74,12 +74,6 @@
 #define MOUSE_BUTTON_LEFT                  1
 #define MOUSE_BUTTON_MIDDLE                2
 
-#ifdef LIBXFCE4PANEL_CHECK_VERSION
-#if LIBXFCE4PANEL_CHECK_VERSION (4,9,0)
-#define HAS_PANEL_49
-#endif
-#endif
-
 typedef struct
 {
     XfcePanelPlugin *plugin;
@@ -357,10 +351,8 @@ mailwatch_set_size(XfcePanelPlugin     *plugin,
     GtkIconTheme *itheme;
     GtkIconInfo *info = NULL;
 
-#ifdef HAS_PANEL_49
     wsize /= xfce_panel_plugin_get_nrows (plugin);
-#endif
-    
+
     /* this is such lame lame voodoo magic.  the x/ythickness stuff
      * shouldn't be needed, since i think the panel button convienence
      * thingo sets them to zero, but we'll leave it for now.  i'm
@@ -1296,10 +1288,8 @@ mailwatch_construct(XfcePanelPlugin *plugin)
 
     g_signal_connect(plugin, "size-changed",
                      G_CALLBACK(mailwatch_set_size), mwp);
-    
-#ifdef HAS_PANEL_49
+
     xfce_panel_plugin_set_small (plugin, TRUE);
-#endif
 
     mi = gtk_image_menu_item_new_with_label(_("Update Now"));
     img = gtk_image_new_from_stock(GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU);
