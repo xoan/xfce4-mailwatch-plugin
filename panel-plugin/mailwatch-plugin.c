@@ -419,7 +419,7 @@ mailwatch_set_size(XfcePanelPlugin     *plugin,
     if (gdk_pixbuf_get_height(mwp->pix_newmail) < height)
         height = gdk_pixbuf_get_height(mwp->pix_newmail);
 
-    if (!GTK_WIDGET_REALIZED(plugin))
+    if (!gtk_widget_get_realized(GTK_WIDGET(plugin)))
         gtk_widget_realize(GTK_WIDGET(plugin));
 
     /* load log mini-icons.  use the smallest dimension of the smaller
