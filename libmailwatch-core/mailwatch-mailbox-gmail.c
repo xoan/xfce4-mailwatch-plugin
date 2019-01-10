@@ -88,15 +88,15 @@
 typedef struct
 {
     XfceMailwatchMailbox mailbox;
-    
+
     GMutex *config_mx;
-    
+
     gchar *username;
     gchar *password;
     guint timeout;
-    
+
     XfceMailwatch *mailwatch;
-    
+
     /* current connection state */
     gint running;
     gpointer th;
@@ -118,7 +118,7 @@ gmail_send(XfceMailwatchGMailMailbox *gmailbox, const gchar *buf)
 {
     GError *error = NULL;
     gssize sent;
-    
+
     sent = xfce_mailwatch_net_conn_send_data(gmailbox->net_conn,
                                              (const guchar *)buf, -1,
                                              &error);
@@ -129,7 +129,7 @@ gmail_send(XfceMailwatchGMailMailbox *gmailbox, const gchar *buf)
                                    error->message);
         g_error_free(error);
     }
-    
+
     return sent;
 }
 
@@ -138,7 +138,7 @@ gmail_recv(XfceMailwatchGMailMailbox *gmailbox, gchar *buf, gsize len)
 {
     GError *error = NULL;
     gssize recvd;
-    
+
     recvd = xfce_mailwatch_net_conn_recv_data(gmailbox->net_conn,
                                               (guchar *)buf, len, &error);
     if(recvd < 0) {
@@ -149,7 +149,7 @@ gmail_recv(XfceMailwatchGMailMailbox *gmailbox, gchar *buf, gsize len)
         g_error_free(error);
     }
     buf[recvd] = 0;
-    
+
     return recvd;
 }
 
@@ -159,14 +159,14 @@ gmail_connect(XfceMailwatchGMailMailbox *gmailbox, gint *port)
     GError *error = NULL;
 
     TRACE("entering");
-    
+
     g_return_val_if_fail(port, FALSE);
-    
+
     gmailbox->net_conn = xfce_mailwatch_net_conn_new(GMAIL_HOST, "https");
     xfce_mailwatch_net_conn_set_should_continue_func(gmailbox->net_conn,
                                                      gmail_should_continue,
                                                      gmailbox);
-    
+
     if(xfce_mailwatch_net_conn_connect(gmailbox->net_conn, &error)) {
         *port = xfce_mailwatch_net_conn_get_port(gmailbox->net_conn);
         return TRUE;
@@ -191,12 +191,12 @@ gmail_check_atom_feed(XfceMailwatchGMailMailbox *gmailbox,
     GError *error = NULL;
     gchar buf[BUFSIZE+1], *base64_creds, *p, *q;
     gint bin, port = 0, respcode, tmp;
-    
+
     if(!gmail_connect(gmailbox, &port)) {
         DBG("failed to connect to gmail server");
         return FALSE;
     }
-    
+
     if(!xfce_mailwatch_net_conn_make_secure(gmailbox->net_conn, &error)) {
         xfce_mailwatch_log_message(gmailbox->mailwatch,
                                    XFCE_MAILWATCH_MAILBOX(gmailbox),
@@ -206,13 +206,13 @@ gmail_check_atom_feed(XfceMailwatchGMailMailbox *gmailbox,
         g_error_free(error);
         goto cleanup;
     }
-    
+
     g_snprintf(buf, BUFSIZE, "%s:%s", username, password);
     if(xfce_mailwatch_base64_encode((guchar *)buf, strlen(buf), &base64_creds) <= 0) {
         DBG("failed to base64 enc credentials");
         goto cleanup;
     }
-    
+
     g_snprintf(buf, BUFSIZE, "GET %s HTTP/1.1\r\n" \
                              "Host: %s:%d\r\n" \
                              "User-Agent: %s/%s\r\n" \
@@ -221,12 +221,12 @@ gmail_check_atom_feed(XfceMailwatchGMailMailbox *gmailbox,
                              "\r\n",
                GMAIL_ATOMURI, GMAIL_HOST, port, PACKAGE, VERSION, base64_creds);
     g_free(base64_creds);
-    
+
     if(gmail_send(gmailbox, buf) != strlen(buf)) {
         DBG("failed to send req");
         goto cleanup;
     }
-    
+
     for(;;) {
         if(!xfce_mailwatch_net_conn_should_continue(gmailbox->net_conn))
             break;
@@ -236,7 +236,7 @@ gmail_check_atom_feed(XfceMailwatchGMailMailbox *gmailbox,
             DBG("failed to recv response (%d)", bin);
             break;
         }
-        
+
         if(first_recv) {
             p = strstr(buf, " ");
             DBG("got first space");
@@ -268,13 +268,13 @@ gmail_check_atom_feed(XfceMailwatchGMailMailbox *gmailbox,
             }
             first_recv = FALSE;
         }
-        
+
         p = strstr(buf, "<fullcount>");
         if(!p)
             continue;
-        
+
         DBG("got opening <fullcount> tag: '%s'", p);
-        
+
         q = strstr(p+1, "<");
         if(!q) {
             gchar buf1[1024];
@@ -283,47 +283,47 @@ gmail_check_atom_feed(XfceMailwatchGMailMailbox *gmailbox,
                 DBG("failed to recv response (%d)", bin);
                 break;
             }
-            
+
             q = strstr(buf1, "<");
             if(!q) {
                 DBG("can't find </fullcount> closing tag");
                 break;
             }
-            
+
             memmove(buf, p, strlen(p));
             memcpy(buf+strlen(p), buf1, strlen(buf1));
             buf[strlen(p)+strlen(buf1)] = 0;
             p = buf;
             q = strstr(p+1, "<");
         }
-        
+
         DBG("p=%p, q=%p", p, q);
-        
+
         *q = 0;
         p += 11;
         if(p >= q) {
             DBG("that's not right...");
             break;
         }
-        
+
         tmp = atoi(p);
         if(tmp < 0) {
             DBG("new message count is <0");
             break;
         }
-        
+
         *new_messages = tmp;
         ret = TRUE;
         break;
     }
-    
+
 cleanup:
-    
+
     if(gmailbox->net_conn) {
         xfce_mailwatch_net_conn_destroy(gmailbox->net_conn);
         gmailbox->net_conn = NULL;
     }
-    
+
     return ret;
 #undef BUFSIZE
 }
@@ -334,19 +334,19 @@ gmail_check_mail(XfceMailwatchGMailMailbox *gmailbox)
 #define BUFSIZE 1024
     gchar username[BUFSIZE], password[BUFSIZE];
     guint new_messages = 0;
-    
+
     g_mutex_lock(gmailbox->config_mx);
-    
+
     if(!gmailbox->username || !gmailbox->password) {
         g_mutex_unlock(gmailbox->config_mx);
         return;
     }
-    
+
     g_strlcpy(username, gmailbox->username, BUFSIZE);
     g_strlcpy(password, gmailbox->password, BUFSIZE);
-    
+
     g_mutex_unlock(gmailbox->config_mx);
-    
+
     if(gmail_check_atom_feed(gmailbox, username, password, &new_messages)) {
         DBG("checked gmail, %u new messages", new_messages);
         xfce_mailwatch_signal_new_messages(gmailbox->mailwatch,
@@ -362,7 +362,7 @@ static gpointer
 gmail_check_mail_th(gpointer data)
 {
     XfceMailwatchGMailMailbox *gmailbox = XFCE_MAILWATCH_GMAIL_MAILBOX(data);
-    
+
     while(!g_atomic_pointer_get(&gmailbox->th)
           && g_atomic_int_get(&gmailbox->running))
     {
@@ -373,7 +373,7 @@ gmail_check_mail_th(gpointer data)
         g_atomic_pointer_set(&gmailbox->th, NULL);
         return NULL;
     }
-    
+
     gmail_check_mail(gmailbox);
 
     g_atomic_pointer_set(&gmailbox->th, NULL);
@@ -411,7 +411,7 @@ gmail_mailbox_new(XfceMailwatch *mailwatch, XfceMailwatchMailboxType *type)
     gmailbox->config_mx = g_mutex_new();
 
     xfce_mailwatch_net_conn_init();
-    
+
     return (XfceMailwatchMailbox *)gmailbox;
 }
 
@@ -464,14 +464,14 @@ gmail_config_username_focus_out_cb(GtkWidget *w,
                                    gpointer user_data)
 {
     XfceMailwatchGMailMailbox *gmailbox = XFCE_MAILWATCH_GMAIL_MAILBOX(user_data);
-    
+
     g_mutex_lock(gmailbox->config_mx);
-    
+
     g_free(gmailbox->username);
     gmailbox->username = gtk_editable_get_chars(GTK_EDITABLE(w), 0, -1);
-    
+
     g_mutex_unlock(gmailbox->config_mx);
-    
+
     return FALSE;
 }
 
@@ -481,14 +481,14 @@ gmail_config_password_focus_out_cb(GtkWidget *w,
                                    gpointer user_data)
 {
     XfceMailwatchGMailMailbox *gmailbox = XFCE_MAILWATCH_GMAIL_MAILBOX(user_data);
-    
+
     g_mutex_lock(gmailbox->config_mx);
-    
+
     g_free(gmailbox->password);
     gmailbox->password = gtk_editable_get_chars(GTK_EDITABLE(w), 0, -1);
-    
+
     g_mutex_unlock(gmailbox->config_mx);
-    
+
     return FALSE;
 }
 
@@ -498,7 +498,7 @@ gmail_config_timeout_spinbutton_changed_cb(GtkSpinButton *sb,
 {
     XfceMailwatchGMailMailbox *gmailbox = XFCE_MAILWATCH_GMAIL_MAILBOX(user_data);
     guint value = (guint) gtk_spin_button_get_value_as_int(sb) * 60;
-    
+
     if(value == gmailbox->timeout)
         return FALSE;
 
@@ -522,22 +522,22 @@ gmail_get_setup_page(XfceMailwatchMailbox *mailbox)
     XfceMailwatchGMailMailbox *gmailbox = XFCE_MAILWATCH_GMAIL_MAILBOX(mailbox);
     GtkWidget *vbox, *hbox, *lbl, *entry, *sbtn;
     GtkSizeGroup *sg;
-    
+
     vbox = gtk_vbox_new(FALSE, BORDER/2);
     gtk_widget_show(vbox);
-    
+
     sg = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
-    
+
     hbox = gtk_hbox_new(FALSE, BORDER/2);
     gtk_widget_show(hbox);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
-    
+
     lbl = gtk_label_new_with_mnemonic(_("_Username:"));
     gtk_misc_set_alignment(GTK_MISC(lbl), 0.0, 0.5);
     gtk_widget_show(lbl);
     gtk_box_pack_start(GTK_BOX(hbox), lbl, FALSE, FALSE, 0);
     gtk_size_group_add_widget(sg, lbl);
-    
+
     entry = gtk_entry_new();
     gtk_entry_set_activates_default(GTK_ENTRY(entry), TRUE);
     if(gmailbox->username)
@@ -547,17 +547,17 @@ gmail_get_setup_page(XfceMailwatchMailbox *mailbox)
     g_signal_connect(G_OBJECT(entry), "focus-out-event",
                      G_CALLBACK(gmail_config_username_focus_out_cb), gmailbox);
     gtk_label_set_mnemonic_widget(GTK_LABEL(lbl), entry);
-    
+
     hbox = gtk_hbox_new(FALSE, BORDER/2);
     gtk_widget_show(hbox);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
-    
+
     lbl = gtk_label_new_with_mnemonic(_("_Password:"));
     gtk_misc_set_alignment(GTK_MISC(lbl), 0.0, 0.5);
     gtk_widget_show(lbl);
     gtk_box_pack_start(GTK_BOX(hbox), lbl, FALSE, FALSE, 0);
     gtk_size_group_add_widget(sg, lbl);
-    
+
     entry = gtk_entry_new();
     gtk_entry_set_activates_default(GTK_ENTRY(entry), TRUE);
     gtk_entry_set_visibility(GTK_ENTRY(entry), FALSE);
@@ -568,7 +568,7 @@ gmail_get_setup_page(XfceMailwatchMailbox *mailbox)
     g_signal_connect(G_OBJECT(entry), "focus-out-event",
                      G_CALLBACK(gmail_config_password_focus_out_cb), gmailbox);
     gtk_label_set_mnemonic_widget(GTK_LABEL(lbl), entry);
-    
+
     hbox = gtk_hbox_new(FALSE, BORDER/2);
     gtk_widget_show(hbox);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
@@ -591,7 +591,7 @@ gmail_get_setup_page(XfceMailwatchMailbox *mailbox)
     lbl = gtk_label_new(_("minute(s)."));
     gtk_widget_show(lbl);
     gtk_box_pack_start(GTK_BOX(hbox), lbl, FALSE, FALSE, 0);
-    
+
     return GTK_CONTAINER(vbox);
 }
 
@@ -600,12 +600,12 @@ gmail_restore_param_list(XfceMailwatchMailbox *mailbox, GList *params)
 {
     XfceMailwatchGMailMailbox *gmailbox = XFCE_MAILWATCH_GMAIL_MAILBOX(mailbox);
     GList *l;
-    
+
     g_mutex_lock(gmailbox->config_mx);
-    
+
     for(l = params; l; l = l->next) {
         XfceMailwatchParam *param = l->data;
-        
+
         if(!strcmp(param->key, "username"))
             gmailbox->username = g_strdup(param->value);
         else if(!strcmp(param->key, "password"))
@@ -613,7 +613,7 @@ gmail_restore_param_list(XfceMailwatchMailbox *mailbox, GList *params)
         else if(!strcmp(param->key, "timeout"))
             gmailbox->timeout = atoi(param->value);
     }
-    
+
     g_mutex_unlock(gmailbox->config_mx);
 }
 
@@ -623,26 +623,26 @@ gmail_save_param_list(XfceMailwatchMailbox *mailbox)
     XfceMailwatchGMailMailbox *gmailbox = XFCE_MAILWATCH_GMAIL_MAILBOX(mailbox);
     GList *params = NULL;
     XfceMailwatchParam *param;
-    
+
     g_mutex_lock(gmailbox->config_mx);
-    
+
     param = g_new(XfceMailwatchParam, 1);
     param->key = g_strdup("username");
     param->value = g_strdup(gmailbox->username);
     params = g_list_prepend(params, param);
-    
+
     param = g_new(XfceMailwatchParam, 1);
     param->key = g_strdup("password");
     param->value = g_strdup(gmailbox->password);
     params = g_list_prepend(params, param);
-    
+
     param = g_new(XfceMailwatchParam, 1);
     param->key = g_strdup("timeout");
     param->value = g_strdup_printf("%u", gmailbox->timeout);
     params = g_list_prepend(params, param);
-    
+
     g_mutex_unlock(gmailbox->config_mx);
-    
+
     return g_list_reverse(params);
 }
 
@@ -650,16 +650,16 @@ static void
 gmail_mailbox_free(XfceMailwatchMailbox *mailbox)
 {
     XfceMailwatchGMailMailbox *gmailbox = XFCE_MAILWATCH_GMAIL_MAILBOX(mailbox);
-    
+
     gmail_set_activated(mailbox, FALSE);
     while(g_atomic_pointer_get(&gmailbox->th))
         g_thread_yield();
-    
+
     g_mutex_free(gmailbox->config_mx);
-    
+
     g_free(gmailbox->username);
     g_free(gmailbox->password);
-    
+
     g_free(gmailbox);
 }
 

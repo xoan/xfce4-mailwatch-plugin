@@ -100,7 +100,7 @@ struct _XfceMailwatchNetConn
 
     guchar *buffer;
     gsize buffer_len;
-    
+
     gboolean is_secure;
 #ifdef HAVE_SSL_SUPPORT
     gnutls_session_t gt_session;
@@ -131,7 +131,7 @@ typedef enum
 #endif
 
 #define GNUTLS_CA_FILE           "ca.pem"
-    
+
 /* stuff to support 'gthreads' with gcrypt */
 static int my_g_mutex_init(void **priv);
 static int my_g_mutex_destroy(void **priv);
@@ -161,7 +161,7 @@ static int
 my_g_mutex_init(void **priv)
 {
     GMutex **gmx = (GMutex **)priv;
-    
+
     *gmx = g_mutex_new();
     if(!*gmx)
         return -1;
@@ -172,7 +172,7 @@ static int
 my_g_mutex_destroy(void **priv)
 {
     GMutex **gmx = (GMutex **)priv;
-    
+
     g_mutex_free(*gmx);
     return 0;
 }
@@ -181,7 +181,7 @@ static int
 my_g_mutex_lock(void **priv)
 {
     GMutex **gmx = (GMutex **)priv;
-    
+
     g_mutex_lock(*gmx);
     return 0;
 }
@@ -190,7 +190,7 @@ static int
 my_g_mutex_unlock(void **priv)
 {
     GMutex **gmx = (GMutex **)priv;
-    
+
     g_mutex_unlock(*gmx);
     return 0;
 }
@@ -376,7 +376,7 @@ xfce_mailwatch_net_conn_new(const gchar *hostname,
                             const gchar *service)
 {
     XfceMailwatchNetConn *net_conn;
-    
+
     g_return_val_if_fail(hostname && *hostname, NULL);
 
     net_conn = g_new0(XfceMailwatchNetConn, 1);
@@ -483,12 +483,12 @@ xfce_mailwatch_net_conn_get_addrinfo(XfceMailwatchNetConn *net_conn,
         g_snprintf(real_service, sizeof(real_service), "%d", net_conn->port);
     else
         g_strlcpy(real_service, net_conn->service, sizeof(real_service));
-    
+
     /* according to getaddrinfo(3), this should be reentrant.  however, calling
      * it from several threads often causes a crash.  backtraces show that we're
      * indeed inside getaddrinfo() in more than one thread, and I can't figure
      * out any other explanation. */
-    
+
     xfce_mailwatch_threads_enter();
     ret = getaddrinfo(net_conn->hostname, real_service, &hints, addresses);
     xfce_mailwatch_threads_leave();
@@ -502,7 +502,7 @@ xfce_mailwatch_net_conn_get_addrinfo(XfceMailwatchNetConn *net_conn,
         }
         return FALSE;
     }
-    
+
     return TRUE;
 }
 
@@ -511,7 +511,7 @@ xfce_mailwatch_net_conn_connect(XfceMailwatchNetConn *net_conn,
                                 GError **error)
 {
     struct addrinfo *addresses = NULL, *ai;
-    
+
     g_return_val_if_fail(net_conn && (!error || !*error), FALSE);
     g_return_val_if_fail(net_conn->fd == -1, TRUE);
 
@@ -521,18 +521,18 @@ xfce_mailwatch_net_conn_connect(XfceMailwatchNetConn *net_conn,
         DBG("failed to get sockaddr");
         return FALSE;
     }
-    
+
     for(ai = addresses; ai; ai = ai->ai_next) {
         net_conn->fd = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
         if(net_conn->fd < 0)
             continue;
-        
+
         if(fcntl(net_conn->fd, F_SETFL,
                  fcntl(net_conn->fd, F_GETFL) | O_NONBLOCK))
         {
             g_warning("Unable to set socket to non-blocking mode. Things may not work properly from here on out.");
         }
-        
+
         switch(xfce_mailwatch_net_conn_do_connect(net_conn, ai->ai_addr,
                                                   ai->ai_addrlen, error))
         {
@@ -571,7 +571,7 @@ xfce_mailwatch_net_conn_connect(XfceMailwatchNetConn *net_conn,
     }
 
 out_err:
-    
+
     if(net_conn->fd >= 0) {
         close(net_conn->fd);
         net_conn->fd = -1;
@@ -610,18 +610,18 @@ xfce_mailwatch_net_conn_make_secure(XfceMailwatchNetConn *net_conn,
     gnutls_certificate_set_x509_trust_file(net_conn->gt_creds,
                                            GNUTLS_CA_FILE,
                                            GNUTLS_X509_FMT_PEM);
-    
+
     /* init the session and set it up */
     gnutls_init(&net_conn->gt_session, GNUTLS_CLIENT);
-    gnutls_priority_set_direct (net_conn->gt_session, "NORMAL", NULL); 
+    gnutls_priority_set_direct (net_conn->gt_session, "NORMAL", NULL);
     gnutls_credentials_set(net_conn->gt_session, GNUTLS_CRD_CERTIFICATE,
                            net_conn->gt_creds);
     gnutls_transport_set_ptr(net_conn->gt_session,
                              (gnutls_transport_ptr_t)net_conn->fd);
-#if GNUTLS_VERSION_NUMBER < 0x020c00 
+#if GNUTLS_VERSION_NUMBER < 0x020c00
     if(fcntl(net_conn->fd, F_GETFL) & O_NONBLOCK)
         gnutls_transport_set_lowat(net_conn->gt_session, 0);
-#endif    
+#endif
 
     if(!xfce_mailwatch_net_conn_tls_handshake(net_conn, error)) {
 #if 0
@@ -642,7 +642,7 @@ xfce_mailwatch_net_conn_make_secure(XfceMailwatchNetConn *net_conn,
                     _("Not compiled with SSL/TLS support"));
     }
     g_critical("XfceMailwatch: TLS handshake failed: not compiled with SSL support.");
-    
+
     return FALSE;
 #endif
 }
@@ -812,7 +812,7 @@ xfce_mailwatch_net_conn_recv_internal(XfceMailwatchNetConn *net_conn,
             }
         } while((gret == GNUTLS_E_INTERRUPTED || gret == GNUTLS_E_AGAIN)
                 && !TIMER_EXPIRED(RECV_TIMEOUT) && SHOULD_CONTINUE(net_conn));
-        
+
         if(gret < 0) {
             if(error) {
                 if(!SHOULD_CONTINUE(net_conn)) {

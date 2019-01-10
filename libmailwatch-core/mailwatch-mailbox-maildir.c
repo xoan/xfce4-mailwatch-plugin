@@ -79,7 +79,7 @@ maildir_check_mail( XfceMailwatchMaildirMailbox *maildir )
     struct stat     st;
 
     DBG( "-->>" );
-    
+
     g_mutex_lock( maildir->mutex );
     if ( !maildir->path || !*(maildir->path) ) {
         goto out;
@@ -94,7 +94,7 @@ maildir_check_mail( XfceMailwatchMaildirMailbox *maildir )
                                     path, g_strerror( errno ) );
         goto out;
     }
-        
+
     if ( !S_ISDIR( st.st_mode ) ) {
         xfce_mailwatch_log_message( maildir->mailwatch,
                                     XFCE_MAILWATCH_MAILBOX( maildir ),
@@ -109,11 +109,11 @@ maildir_check_mail( XfceMailwatchMaildirMailbox *maildir )
         GError      *error = NULL;
 
         dir = g_dir_open( path, 0, &error );
-        
+
         if ( dir ) {
             int             count_new = 0;
             const gchar     *entry;
-            
+
             while ( ( entry = g_dir_read_name( dir ) ) ) {
                 count_new++;
 
@@ -194,12 +194,12 @@ maildir_new( XfceMailwatch *mailwatch, XfceMailwatchMailboxType *type )
     DBG( "entering" );
 
     maildir = g_new0( XfceMailwatchMaildirMailbox, 1 );
-    
+
     maildir->mailwatch      = mailwatch;
     maildir->path           = NULL;
     maildir->interval       = XFCE_MAILWATCH_DEFAULT_TIMEOUT;
     maildir->mutex          = g_mutex_new();
-    
+
     return ( (XfceMailwatchMailbox *) maildir );
 }
 
@@ -213,7 +213,7 @@ maildir_save_param_list( XfceMailwatchMailbox *mailbox )
     DBG( "-->>" );
 
     g_mutex_lock( maildir->mutex );
-    
+
     param           = g_new( XfceMailwatchParam, 1 );
     param->key      = g_strdup( "path" );
     param->value    = g_strdup( ( maildir->path ) ? maildir->path : "" );
@@ -245,7 +245,7 @@ maildir_restore_param_list( XfceMailwatchMailbox *mailbox, GList *params )
     DBG( "-->>" );
 
     g_mutex_lock( maildir->mutex );
-    
+
     for ( li = g_list_first( params ); li != NULL; li = g_list_next( li ) ) {
         XfceMailwatchParam  *param = (XfceMailwatchParam *) li->data;
 
@@ -374,9 +374,9 @@ maildir_get_setup_page( XfceMailwatchMailbox *mailbox )
     label = gtk_label_new( _( "minute(s)." ) );
     gtk_widget_show( label );
     gtk_box_pack_start( GTK_BOX( hbox ), label, FALSE, FALSE, 0 );
-    
+
     DBG( "<<--" );
-    
+
     return ( GTK_CONTAINER( vbox ) );
 }
 

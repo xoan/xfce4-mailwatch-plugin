@@ -109,7 +109,7 @@ mh_profile_print( GList *profile )
 
     for ( li = g_list_first( profile ); li != NULL; li = g_list_next( li ) ) {
         MHProfileEntry     *e = li->data;
-        
+
         DBG( "%s: %s", e->component, e->value );
     }
 }
@@ -254,9 +254,9 @@ static gint
 mh_profile_entry_compare( gconstpointer a, gconstpointer b )
 {
     const MHProfileEntry    *e = a;
-    
+
     DBG( "%s <-> %s", e->component, (const gchar *) b );
-    
+
     return ( g_ascii_strcasecmp( e->component, b ) );
 }
 
@@ -267,7 +267,7 @@ mh_profile_entry_get_value( GList *profile, const gchar *component )
     GList                   *li;
 
     DBG( "--> %s", component );
-    
+
     li = g_list_find_custom( profile, component, mh_profile_entry_compare );
     if ( !li ) {
         DBG( "NULL" );
@@ -332,7 +332,7 @@ mh_read_config( XfceMailwatchMHMailbox *mh )
         DBG( "Profile == NULL" );
         return;
     }
-    
+
 #ifdef DEBUG
     mh_profile_print( profile );
 #endif
@@ -353,7 +353,7 @@ mh_read_config( XfceMailwatchMHMailbox *mh )
     mh_sequences = mh_profile_entry_get_value( profile, "mh-sequences" );
 
     mh->unseen_sequence = mh_profile_entry_get_value( profile, "Unseen-Sequence" );
-    
+
     mh->mh_sequences_fn = g_build_filename( mh_path,
             mh_inbox ? mh_inbox : MH_INBOX,
             mh_sequences ? mh_sequences : MH_SEQUENCES,
@@ -379,7 +379,7 @@ mh_check_mail( XfceMailwatchMHMailbox *mh )
     if ( !mh->mh_profile_fn ) {
         mh->mh_profile_fn = mh_get_profile_filename();
     }
-    
+
     if ( stat( mh->mh_profile_fn, &st ) == 0 ) {
         if ( st.st_ctime != mh->mh_profile_ctime ) {
             mh_read_config( mh );
@@ -505,7 +505,7 @@ mh_new( XfceMailwatch *mailwatch, XfceMailwatchMailboxType *type )
 
     mh->mailwatch       = mailwatch;
     mh->timeout         = XFCE_MAILWATCH_DEFAULT_TIMEOUT;
-    
+
     return ( XFCE_MAILWATCH_MAILBOX( mh ) );
 }
 
@@ -514,12 +514,12 @@ mh_restore_param_list( XfceMailwatchMailbox *mailbox, GList *params )
 {
     XfceMailwatchMHMailbox  *mh = XFCE_MAILWATCH_MH_MAILBOX( mailbox );
     GList                   *li;
-    
+
     DBG( "-->>" );
 
     for ( li = g_list_first( params ); li != NULL; li = g_list_next( li ) ) {
         XfceMailwatchParam  *param = li->data;
-        
+
         if ( !strcmp( param->key, "timeout" ) ) {
             mh->timeout = (guint) atol( param->value );
         }
@@ -532,14 +532,14 @@ mh_save_param_list( XfceMailwatchMailbox *mailbox )
     XfceMailwatchMHMailbox  *mh = XFCE_MAILWATCH_MH_MAILBOX( mailbox );
     XfceMailwatchParam      *param;
     GList                   *params = NULL;
-    
+
     DBG( "-->>" );
 
     param           = g_new( XfceMailwatchParam, 1 );
     param->key      = g_strdup( "timeout" );
     param->value    = g_strdup_printf( "%u", mh->timeout );
     params = g_list_prepend( params, param );
-    
+
     return ( params );
 }
 
@@ -577,7 +577,7 @@ mh_get_setup_page( XfceMailwatchMailbox *mailbox )
     hbox = gtk_hbox_new( FALSE, BORDER );
     gtk_widget_show( hbox );
     gtk_box_pack_start( GTK_BOX( vbox ), hbox, FALSE, FALSE, 0 );
-    
+
     label = gtk_label_new( _( "The configuration of this plugin is read from\n"
                               "the default mh maildir profile file ~/.mh_profile" ) );
     gtk_widget_show( label );
@@ -586,7 +586,7 @@ mh_get_setup_page( XfceMailwatchMailbox *mailbox )
     hbox = gtk_hbox_new( FALSE, BORDER );
     gtk_widget_show( hbox );
     gtk_box_pack_start( GTK_BOX( vbox ), hbox, FALSE, FALSE, 0 );
-    
+
     label = gtk_label_new_with_mnemonic( _( "_Interval:" ) );
     gtk_widget_show( label );
     gtk_misc_set_alignment( GTK_MISC( label ), 1, 0.5 );
@@ -605,7 +605,7 @@ mh_get_setup_page( XfceMailwatchMailbox *mailbox )
     label = gtk_label_new( _( "minute(s)." ) );
     gtk_widget_show( label );
     gtk_box_pack_start( GTK_BOX( hbox ), label, FALSE, FALSE, 0 );
-    
+
     return ( GTK_CONTAINER( vbox ) );
 }
 

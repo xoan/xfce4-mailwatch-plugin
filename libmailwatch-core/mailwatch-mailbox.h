@@ -136,7 +136,7 @@ typedef void (*RestoreParamListFunc)(XfceMailwatchMailbox *mailbox,
  * @key<!-- -->s and @value<!-- -->s will be freed by the caller.
  *
  * Returns: A #Glist of #XfceMailwatchParam<!-- -->s.
- **/ 
+ **/
 typedef GList *(*SaveParamListFunc)(XfceMailwatchMailbox *mailbox);
 
 /**

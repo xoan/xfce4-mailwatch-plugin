@@ -64,7 +64,7 @@ typedef struct {
     size_t                  size;
     guint                   new_messages;
     guint                   interval;
-    
+
     gint                    running;
     gpointer                thread;  /* (GThread *) */
     guint                   check_id;
@@ -126,7 +126,7 @@ mbox_check_mail( XfceMailwatchMboxMailbox *mbox )
             g_error_free( error );
             error = NULL;
         }
-       
+
         if ( mbox->size && st.st_size > (guint)mbox->size ) {
             /* G_SEEK_CUR is same as G_SEEK_SET in this context. */
             if ( g_io_channel_seek_position( ioc, mbox->size, G_SEEK_CUR, &error ) !=  G_IO_STATUS_NORMAL ) {
@@ -144,7 +144,7 @@ mbox_check_mail( XfceMailwatchMboxMailbox *mbox )
 
         while ( g_io_channel_read_line( ioc, &p, NULL, &nl, NULL ) == G_IO_STATUS_NORMAL ) {
             p[nl] = 0;
-            
+
             if ( !in_header ) {
                 if ( !strncmp( p, "From ", 5 ) ) {
                     in_header = TRUE;
@@ -180,7 +180,7 @@ mbox_check_mail( XfceMailwatchMboxMailbox *mbox )
             }
         }
         g_io_channel_unref( ioc );
-        
+
         if ( st.st_size > (guint)mbox->size && num_new <= mbox->new_messages ) {
             /* Assume mailbox opened and some headers added by client */
             num_new = mbox->new_messages = 0;
@@ -255,7 +255,7 @@ mbox_save_settings( XfceMailwatchMailbox *mailbox )
     GList                       *settings = NULL;
 
     g_mutex_lock( mbox->settings_mutex );
-    
+
     param = g_new( XfceMailwatchParam, 1 );
     param->key      = g_strdup( "filename" );
     param->value    = g_strdup( ( mbox->fn ) ? mbox->fn : "" );
@@ -288,7 +288,7 @@ mbox_restore_settings( XfceMailwatchMailbox *mailbox, GList *settings )
     GList                       *li;
 
     g_mutex_lock( mbox->settings_mutex );
-    
+
     for ( li = g_list_first( settings ); li != NULL; li = g_list_next( li ) ) {
         XfceMailwatchParam      *p = (XfceMailwatchParam *) li->data;
 
@@ -349,7 +349,7 @@ mbox_interval_changed_cb( GtkWidget *spinner, XfceMailwatchMboxMailbox *mbox ) {
     }
     mbox->interval = val;
 }
-    
+
 static GtkContainer *
 mbox_get_setup_page( XfceMailwatchMailbox *mailbox )
 {
@@ -361,7 +361,7 @@ mbox_get_setup_page( XfceMailwatchMailbox *mailbox )
 
     vbox = gtk_vbox_new( FALSE, BORDER / 2 );
     gtk_widget_show( vbox );
-    
+
     hbox = gtk_hbox_new( FALSE, BORDER );
     gtk_widget_show( hbox );
     gtk_box_pack_start( GTK_BOX( vbox ), hbox, FALSE, FALSE, 0 );
@@ -462,7 +462,7 @@ mbox_free( XfceMailwatchMailbox *mailbox )
     mbox_activate( mailbox, FALSE );
     while( g_atomic_pointer_get( &mbox->thread ) )
         g_thread_yield();
-    
+
     g_mutex_free( mbox->settings_mutex );
 
     if ( mbox->fn ) {

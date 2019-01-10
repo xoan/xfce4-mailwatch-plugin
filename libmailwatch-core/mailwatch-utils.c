@@ -64,16 +64,16 @@ xfce_mailwatch_custom_button_new(const gchar *text, const gchar *icon)
     GtkWidget *btn, *hbox, *img, *lbl;
     GdkPixbuf *pix;
     gint iw, ih;
-    
+
     g_return_val_if_fail((text && *text) || icon, NULL);
-    
+
     btn = gtk_button_new();
-    
+
     hbox = gtk_hbox_new(FALSE, 4);
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 0);
     gtk_widget_show(hbox);
     gtk_container_add(GTK_CONTAINER(btn), hbox);
-    
+
     if(icon) {
         img = gtk_image_new_from_stock(icon, GTK_ICON_SIZE_BUTTON);
         if(!img || gtk_image_get_storage_type(GTK_IMAGE(img)) == GTK_IMAGE_EMPTY) {
@@ -93,14 +93,14 @@ xfce_mailwatch_custom_button_new(const gchar *text, const gchar *icon)
             gtk_box_pack_start(GTK_BOX(hbox), img, FALSE, FALSE, 0);
         }
     }
-    
+
     if(text) {
         lbl = gtk_label_new_with_mnemonic(text);
         gtk_widget_show(lbl);
         gtk_box_pack_start(GTK_BOX(hbox), lbl, FALSE, FALSE, 0);
         gtk_label_set_mnemonic_widget(GTK_LABEL(lbl), btn);
     }
-    
+
     return btn;
 }
 
@@ -134,7 +134,7 @@ xfce_mailwatch_cram_md5(const gchar *username,
     gsize len, username_len;
     gcry_md_hd_t hmac_md5;
     gchar *response, *response_base64 = NULL;
-    
+
     g_return_val_if_fail(username && *username && password && *password
                          && challenge_base64 && *challenge_base64, NULL);
 
@@ -186,22 +186,22 @@ xfce_mailwatch_cram_md5(const gchar *username,
  * Copyright (c) 1995 - 1999 Kungliga Tekniska Högskolan
  * (Royal Institute of Technology, Stockholm, Sweden).
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the Institute nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -278,7 +278,7 @@ xfce_mailwatch_base64_decode(const gchar *str,
   int c;
   int x;
   int done = 0;
-  
+
   q=(unsigned char*)data;
   for(p=str; *p && !done; p+=4){
     x = pos(p[0]);
@@ -289,14 +289,14 @@ xfce_mailwatch_base64_decode(const gchar *str,
       break;
     }
     c*=64;
-    
+
     x = pos(p[1]);
     if(x >= 0)
       c += x;
     else
       return -1;
     c*=64;
-    
+
     if(p[2] == '=')
       done++;
     else{
@@ -307,7 +307,7 @@ xfce_mailwatch_base64_decode(const gchar *str,
 	return -1;
     }
     c*=64;
-    
+
     if(p[3] == '=')
       done++;
     else{
@@ -325,7 +325,7 @@ xfce_mailwatch_base64_decode(const gchar *str,
       *q++=(c&0x00ff0000)>>16;
       --size;
     }
-      
+
     if(done < 2) {
       if(!size)
         return -1;

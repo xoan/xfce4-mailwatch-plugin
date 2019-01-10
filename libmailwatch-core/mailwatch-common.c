@@ -30,10 +30,10 @@ GQuark
 xfce_mailwatch_get_error_quark(void)
 {
     static GQuark q = 0;
-    
+
     if(!q)
         q = g_quark_from_string("xfce-mailwatch-error");
-    
+
     return q;
 }
 
