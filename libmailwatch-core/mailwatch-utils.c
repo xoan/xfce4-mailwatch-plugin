@@ -69,7 +69,7 @@ xfce_mailwatch_custom_button_new(const gchar *text, const gchar *icon)
 
     btn = gtk_button_new();
 
-    hbox = gtk_hbox_new(FALSE, 4);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
     gtk_container_set_border_width(GTK_CONTAINER(hbox), 0);
     gtk_widget_show(hbox);
     gtk_container_add(GTK_CONTAINER(btn), hbox);

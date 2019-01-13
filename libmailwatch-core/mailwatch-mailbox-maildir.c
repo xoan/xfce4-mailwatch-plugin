@@ -323,10 +323,10 @@ maildir_get_setup_page( XfceMailwatchMailbox *mailbox )
 
     DBG( "-->>" );
 
-    vbox = gtk_vbox_new( FALSE, BORDER / 2 );
+    vbox = gtk_box_new( GTK_ORIENTATION_VERTICAL, BORDER / 2 );
     gtk_widget_show( vbox );
 
-    hbox = gtk_hbox_new( FALSE, BORDER );
+    hbox = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, BORDER );
     gtk_widget_show( hbox );
     gtk_box_pack_start( GTK_BOX( vbox ), hbox, FALSE, FALSE, 0 );
 
@@ -351,7 +351,7 @@ maildir_get_setup_page( XfceMailwatchMailbox *mailbox )
 
     gtk_label_set_mnemonic_widget( GTK_LABEL( label ), button );
 
-    hbox = gtk_hbox_new( FALSE, BORDER );
+    hbox = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, BORDER );
     gtk_widget_show( hbox );
     gtk_box_pack_start( GTK_BOX( vbox ), hbox, FALSE, FALSE, 0 );
 

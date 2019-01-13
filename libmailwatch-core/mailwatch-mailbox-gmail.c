@@ -523,12 +523,12 @@ gmail_get_setup_page(XfceMailwatchMailbox *mailbox)
     GtkWidget *vbox, *hbox, *lbl, *entry, *sbtn;
     GtkSizeGroup *sg;
 
-    vbox = gtk_vbox_new(FALSE, BORDER/2);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
     gtk_widget_show(vbox);
 
     sg = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
 
-    hbox = gtk_hbox_new(FALSE, BORDER/2);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2);
     gtk_widget_show(hbox);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
@@ -548,7 +548,7 @@ gmail_get_setup_page(XfceMailwatchMailbox *mailbox)
                      G_CALLBACK(gmail_config_username_focus_out_cb), gmailbox);
     gtk_label_set_mnemonic_widget(GTK_LABEL(lbl), entry);
 
-    hbox = gtk_hbox_new(FALSE, BORDER/2);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2);
     gtk_widget_show(hbox);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
@@ -569,7 +569,7 @@ gmail_get_setup_page(XfceMailwatchMailbox *mailbox)
                      G_CALLBACK(gmail_config_password_focus_out_cb), gmailbox);
     gtk_label_set_mnemonic_widget(GTK_LABEL(lbl), entry);
 
-    hbox = gtk_hbox_new(FALSE, BORDER/2);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2);
     gtk_widget_show(hbox);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 

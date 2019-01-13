@@ -618,7 +618,7 @@ config_run_addedit_window(const gchar *title, GtkWindow *parent,
     cfg_box = mailbox->type->get_setup_page_func(mailbox);
     if(!cfg_box) {
         /* Even the mailboxes that don't have configurable settings need a name */
-        cfg_box = GTK_CONTAINER(gtk_hbox_new(FALSE, BORDER/2));
+        cfg_box = GTK_CONTAINER(gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2));
         gtk_widget_show(GTK_WIDGET(cfg_box));
 
         lbl = gtk_label_new(_("This mailbox type does not require any configuration settings."));
@@ -639,12 +639,12 @@ config_run_addedit_window(const gchar *title, GtkWindow *parent,
     }
     gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
 
-    topvbox = gtk_vbox_new(FALSE, BORDER/2);
+    topvbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
     gtk_container_set_border_width(GTK_CONTAINER(topvbox), BORDER);
     gtk_widget_show(topvbox);
     gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(dlg)), topvbox, TRUE, TRUE, 0);
 
-    hbox = gtk_hbox_new(FALSE, BORDER/2);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2);
     gtk_widget_show(hbox);
     gtk_box_pack_start(GTK_BOX(topvbox), hbox, FALSE, FALSE, 0);
 
@@ -773,7 +773,7 @@ config_ask_new_mailbox_type(XfceMailwatch *mailwatch, GtkWindow *parent)
             GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, NULL);
     gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
 
-    topvbox = gtk_vbox_new(FALSE, BORDER/2);
+    topvbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
     gtk_container_set_border_width(GTK_CONTAINER(topvbox), BORDER);
     gtk_widget_show(topvbox);
     gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(dlg)), topvbox, TRUE, TRUE, 0);
@@ -962,7 +962,7 @@ xfce_mailwatch_get_configuration_page(XfceMailwatch *mailwatch)
     frame = xfce_gtk_frame_box_new(_("Mailboxes"), &frame_bin);
     gtk_widget_show(frame);
 
-    hbox = gtk_hbox_new(FALSE, BORDER/2);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2);
     gtk_widget_show(hbox);
     gtk_container_add(GTK_CONTAINER(frame_bin), hbox);
 
@@ -1009,7 +1009,7 @@ xfce_mailwatch_get_configuration_page(XfceMailwatch *mailwatch)
     gtk_tree_selection_set_mode(sel, GTK_SELECTION_SINGLE);
     gtk_tree_selection_unselect_all(sel);
 
-    vbox = gtk_vbox_new(FALSE, BORDER/2);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
     gtk_widget_show(vbox);
     gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 0);
 

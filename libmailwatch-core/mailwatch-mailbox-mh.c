@@ -571,10 +571,10 @@ mh_get_setup_page( XfceMailwatchMailbox *mailbox )
     GtkWidget               *vbox, *hbox;
     GtkWidget               *label, *spinner;
 
-    vbox = gtk_vbox_new( FALSE, BORDER );
+    vbox = gtk_box_new( GTK_ORIENTATION_VERTICAL, BORDER );
     gtk_widget_show( vbox );
 
-    hbox = gtk_hbox_new( FALSE, BORDER );
+    hbox = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, BORDER );
     gtk_widget_show( hbox );
     gtk_box_pack_start( GTK_BOX( vbox ), hbox, FALSE, FALSE, 0 );
 
@@ -583,7 +583,7 @@ mh_get_setup_page( XfceMailwatchMailbox *mailbox )
     gtk_widget_show( label );
     gtk_box_pack_start( GTK_BOX( hbox ), label, FALSE, FALSE, 0 );
 
-    hbox = gtk_hbox_new( FALSE, BORDER );
+    hbox = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, BORDER );
     gtk_widget_show( hbox );
     gtk_box_pack_start( GTK_BOX( vbox ), hbox, FALSE, FALSE, 0 );
 

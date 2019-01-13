@@ -709,7 +709,7 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
     g_signal_connect_swapped(G_OBJECT(mwp->log_dialog), "destroy",
                      G_CALLBACK(mailwatch_zero_pointer), &mwp->log_dialog);
 
-    vbox = gtk_vbox_new(FALSE, BORDER/2);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
     gtk_container_set_border_width(GTK_CONTAINER(vbox), BORDER/2);
     gtk_widget_show(vbox);
     gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(mwp->log_dialog)), vbox, TRUE, TRUE, 0);
@@ -751,7 +751,7 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
     gtk_widget_show( treeview );
     gtk_container_add( GTK_CONTAINER( scrollw ), treeview );
 
-    hbox = gtk_hbox_new(FALSE, BORDER/2);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2);
     gtk_widget_show(hbox);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
@@ -880,7 +880,7 @@ mailwatch_iconbtn_clicked_cb(GtkWidget           *w,
 
             gtk_container_remove(GTK_CONTAINER(w), gtk_bin_get_child(GTK_BIN(w)));
 
-            vbox = gtk_vbox_new(FALSE, BORDER / 2);
+            vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER / 2);
             gtk_widget_show(vbox);
             gtk_container_add(GTK_CONTAINER(w), vbox);
 
@@ -1049,7 +1049,7 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
     btn = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
     gtk_dialog_add_action_widget(GTK_DIALOG(dlg), btn, GTK_RESPONSE_ACCEPT);
 
-    topvbox = gtk_vbox_new(FALSE, BORDER);
+    topvbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER);
     gtk_container_set_border_width(GTK_CONTAINER(topvbox), BORDER - 2);
     gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(dlg)), topvbox,
                         TRUE, TRUE, 0);
@@ -1121,7 +1121,7 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
 
     sg = gtk_size_group_new(GTK_SIZE_GROUP_BOTH);
 
-    hbox = gtk_hbox_new(FALSE, BORDER/2);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2);
     gtk_container_add(GTK_CONTAINER(frame_bin), hbox);
 
     btn = gtk_button_new();
@@ -1132,7 +1132,7 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
                      G_CALLBACK(mailwatch_iconbtn_clicked_cb), mwp);
     gtk_size_group_add_widget(sg, btn);
 
-    vbox = gtk_vbox_new(FALSE, BORDER/2);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
     gtk_container_add(GTK_CONTAINER(btn), vbox);
 
     img = gtk_image_new_from_pixbuf(mwp->pix_normal);
@@ -1149,7 +1149,7 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
                      G_CALLBACK(mailwatch_iconbtn_clicked_cb), mwp);
     gtk_size_group_add_widget(sg, btn);
 
-    vbox = gtk_vbox_new(FALSE, BORDER/2);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
     gtk_container_add(GTK_CONTAINER(btn), vbox);
 
     img = gtk_image_new_from_pixbuf(mwp->pix_newmail);
@@ -1158,7 +1158,7 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
     lbl = gtk_label_new_with_mnemonic(_("Ne_w Mail"));
     gtk_box_pack_start(GTK_BOX(vbox), lbl, FALSE, FALSE, 0);
 
-    hbox = gtk_hbox_new(FALSE, BORDER/2);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2);
     gtk_box_pack_start(GTK_BOX(topvbox), hbox, FALSE, FALSE, 0);
 
     gtk_widget_show_all(dlg);
