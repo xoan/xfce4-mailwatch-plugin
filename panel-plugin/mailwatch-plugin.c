@@ -1027,7 +1027,7 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
     dlg = xfce_titled_dialog_new_with_buttons(_("Mail Watcher"),
                 GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(plugin))),
                 GTK_DIALOG_DESTROY_WITH_PARENT, NULL);
-    gtk_button_box_set_layout(gtk_dialog_get_action_area(GTK_DIALOG(dlg)),
+    gtk_button_box_set_layout(GTK_BUTTON_BOX(exo_gtk_dialog_get_action_area(GTK_DIALOG(dlg))),
                               GTK_BUTTONBOX_EDGE);
     g_signal_connect(G_OBJECT(dlg), "response",
                      G_CALLBACK(mailwatch_dialog_response), mwp);
@@ -1039,7 +1039,7 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
     gtk_button_set_image(GTK_BUTTON(btn),
                          gtk_image_new_from_icon_name("help-contents",
                                                       GTK_ICON_SIZE_BUTTON));
-    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_action_area(GTK_DIALOG(dlg))),
+    gtk_box_pack_start(GTK_BOX(exo_gtk_dialog_get_action_area(GTK_DIALOG(dlg))),
                        btn, FALSE, FALSE, 0);
 
     g_signal_connect(G_OBJECT(btn), "clicked",
@@ -1049,7 +1049,7 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
     gtk_button_set_image(GTK_BUTTON(btn),
                          gtk_image_new_from_icon_name("edit-find",
                                                       GTK_ICON_SIZE_BUTTON));
-    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_action_area(GTK_DIALOG(dlg))),
+    gtk_box_pack_start(GTK_BOX(exo_gtk_dialog_get_action_area(GTK_DIALOG(dlg))),
                        btn, FALSE, FALSE, 0);
 
     g_signal_connect(G_OBJECT(btn), "clicked",
