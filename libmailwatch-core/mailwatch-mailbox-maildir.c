@@ -171,6 +171,7 @@ maildir_check_mail_timeout( gpointer data )
 {
     XfceMailwatchMaildirMailbox *maildir = XFCE_MAILWATCH_MAILDIR_MAILBOX( data );
     GThread                     *th;
+    GError                      *error = NULL;
 
     if( g_atomic_pointer_get( &maildir->thread ) ) {
         xfce_mailwatch_log_message( maildir->mailwatch,
@@ -180,7 +181,7 @@ maildir_check_mail_timeout( gpointer data )
         return TRUE;
     }
 
-    th = g_thread_create( maildir_main_thread, maildir, FALSE, NULL );
+    th = g_thread_try_new( NULL, maildir_main_thread, maildir, &error );
     g_atomic_pointer_set( &maildir->thread, th );
 
     return TRUE;

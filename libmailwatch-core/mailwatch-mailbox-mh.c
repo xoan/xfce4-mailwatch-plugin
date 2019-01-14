@@ -479,6 +479,7 @@ mh_check_mail_timeout(gpointer data)
 {
     XfceMailwatchMHMailbox *mh = XFCE_MAILWATCH_MH_MAILBOX( data );
     GThread                *th;
+    GError                 *error = NULL;
 
     if( g_atomic_pointer_get( &mh->thread ) ) {
         xfce_mailwatch_log_message( mh->mailwatch,
@@ -488,7 +489,7 @@ mh_check_mail_timeout(gpointer data)
         return TRUE;
     }
 
-    th = g_thread_create( mh_main_thread, mh, FALSE, NULL );
+    th = g_thread_try_new( NULL, mh_main_thread, mh, &error );
     g_atomic_pointer_set( &mh->thread, th );
 
     return TRUE;

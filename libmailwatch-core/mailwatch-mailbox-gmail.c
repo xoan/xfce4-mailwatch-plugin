@@ -386,6 +386,7 @@ gmail_check_mail_timeout(gpointer data)
     XfceMailwatchGMailMailbox *gmailbox = XFCE_MAILWATCH_GMAIL_MAILBOX(data);
 
     GThread *th;
+    GError  *error = NULL;
 
     if(g_atomic_pointer_get(&gmailbox->th)) {
         xfce_mailwatch_log_message(gmailbox->mailwatch,
@@ -395,7 +396,7 @@ gmail_check_mail_timeout(gpointer data)
         return TRUE;
     }
 
-    th = g_thread_create(gmail_check_mail_th, gmailbox, FALSE, NULL);
+    th = g_thread_try_new(NULL, gmail_check_mail_th, gmailbox, &error);
     g_atomic_pointer_set(&gmailbox->th, th);
 
     return TRUE;

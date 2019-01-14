@@ -727,6 +727,7 @@ imap_check_mail_timeout(gpointer data)
 {
     XfceMailwatchIMAPMailbox *imailbox = data;
     GThread *th;
+    GError  *error = NULL;
 
     if(g_atomic_pointer_get(&imailbox->th)) {
         xfce_mailwatch_log_message(imailbox->mailwatch,
@@ -736,7 +737,7 @@ imap_check_mail_timeout(gpointer data)
         return TRUE;
     }
 
-    th = g_thread_create(imap_check_mail_th, imailbox, FALSE, NULL);
+    th = g_thread_try_new(NULL, imap_check_mail_th, imailbox, &error);
     g_atomic_pointer_set(&imailbox->th, th);
 
     return TRUE;
@@ -1272,6 +1273,7 @@ imap_config_refresh_btn_clicked_cb(GtkWidget *w, gpointer user_data)
     XfceMailwatchIMAPMailbox *imailbox = user_data;
     GtkTreeIter itr;
     GThread *th;
+    GError  *error = NULL;
 
     if(!imailbox->host || !imailbox->username)
         return;
@@ -1292,8 +1294,7 @@ imap_config_refresh_btn_clicked_cb(GtkWidget *w, gpointer user_data)
                 "style-set", TRUE, NULL);
 
     g_atomic_int_set(&imailbox->folder_tree_running, TRUE);
-    th = g_thread_create(imap_populate_folder_tree_th,
-                         imailbox, FALSE, NULL);
+    th = g_thread_try_new(NULL, imap_populate_folder_tree_th, imailbox, &error);
     g_atomic_pointer_set(&imailbox->folder_tree_th, th);
 }
 
@@ -1378,6 +1379,7 @@ imap_config_newmailfolders_btn_clicked_cb(GtkWidget *w, gpointer user_data)
     GtkTreeViewColumn *col;
     GtkTreeSelection *sel;
     GThread *th;
+    GError  *error = NULL;
 
     if(imailbox->folder_tree_dialog) {
         gtk_window_present(GTK_WINDOW(imailbox->folder_tree_dialog));
@@ -1499,8 +1501,7 @@ imap_config_newmailfolders_btn_clicked_cb(GtkWidget *w, gpointer user_data)
     gtk_widget_set_sensitive(btn, FALSE);
 
     g_atomic_int_set(&imailbox->folder_tree_running, TRUE);
-    th = g_thread_create(imap_populate_folder_tree_th,
-                         imailbox, FALSE, NULL);
+    th = g_thread_try_new(NULL, imap_populate_folder_tree_th, imailbox, &error);
     g_atomic_pointer_set(&imailbox->folder_tree_th, th);
 
     gtk_dialog_run(GTK_DIALOG(dlg));
