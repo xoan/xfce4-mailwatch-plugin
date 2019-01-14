@@ -908,6 +908,9 @@ pop3_get_setup_page(XfceMailwatchMailbox *mailbox)
     gtk_box_pack_start(GTK_BOX(topvbox), hbox, FALSE, FALSE, 0);
 
     btn = gtk_button_new_with_mnemonic(_("_Advanced..."));
+    gtk_button_set_image(GTK_BUTTON(btn),
+                         gtk_image_new_from_icon_name("preferences-other",
+                                                      GTK_ICON_SIZE_BUTTON));
     gtk_widget_show(btn);
     gtk_box_pack_start(GTK_BOX(hbox), btn, FALSE, FALSE, 0);
     g_signal_connect(G_OBJECT(btn), "clicked",
