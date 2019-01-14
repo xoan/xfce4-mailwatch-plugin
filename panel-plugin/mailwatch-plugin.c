@@ -260,7 +260,7 @@ mailwatch_log_message_cb(XfceMailwatch *mailwatch,
     gchar time_str[256] = "", *new_message = NULL;
 
     if (localtime_r(&entry->timestamp, &ltm))
-        strftime(time_str, 256, "%x %T:", &ltm);
+        strftime(time_str, 256, "%c:", &ltm);
 
     if (entry->level >= XFCE_MAILWATCH_N_LOG_LEVELS)
         entry->level = XFCE_MAILWATCH_N_LOG_LEVELS - 1;
