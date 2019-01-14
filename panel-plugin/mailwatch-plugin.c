@@ -702,7 +702,7 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
     mwp->log_dialog = gtk_dialog_new_with_buttons(_( "Mailwatch log" ),
                                                   GTK_WINDOW(gtk_widget_get_toplevel(widget)),
                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
-                                                  NULL);
+                                                  NULL, NULL);
     gtk_widget_set_size_request(mwp->log_dialog, 480, 240 );
     g_signal_connect(G_OBJECT(mwp->log_dialog), "response",
                      G_CALLBACK(mailwatch_log_window_response_cb), mwp->loglist);
