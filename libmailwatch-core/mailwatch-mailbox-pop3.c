@@ -745,15 +745,17 @@ pop3_config_advanced_btn_clicked_cb(GtkWidget *w, gpointer user_data)
               *combo;
 
     dlg = gtk_dialog_new_with_buttons(_("Advanced POP3 Options"),
-            GTK_WINDOW(gtk_widget_get_toplevel(w)),
-            GTK_DIALOG_DESTROY_WITH_PARENT,
-            GTK_STOCK_CLOSE, GTK_RESPONSE_ACCEPT, NULL);
+                                        GTK_WINDOW(gtk_widget_get_toplevel(w)),
+                                        GTK_DIALOG_DESTROY_WITH_PARENT,
+                                        _("Close"), GTK_RESPONSE_ACCEPT,
+                                        NULL);
     gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
 
     topvbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
     gtk_container_set_border_width(GTK_CONTAINER(topvbox), BORDER/2);
     gtk_widget_show(topvbox);
-    gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(dlg)), topvbox, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dlg))),
+                       topvbox, TRUE, TRUE, 0);
 
     frame = xfce_gtk_frame_box_new(_("Connection"), &frame_bin);
     gtk_widget_show(frame);
@@ -902,8 +904,7 @@ pop3_get_setup_page(XfceMailwatchMailbox *mailbox)
     gtk_widget_show(hbox);
     gtk_box_pack_start(GTK_BOX(topvbox), hbox, FALSE, FALSE, 0);
 
-    btn = xfce_mailwatch_custom_button_new(_("_Advanced..."),
-            GTK_STOCK_PREFERENCES);
+    btn = gtk_button_new_with_mnemonic(_("_Advanced..."));
     gtk_widget_show(btn);
     gtk_box_pack_start(GTK_BOX(hbox), btn, FALSE, FALSE, 0);
     g_signal_connect(G_OBJECT(btn), "clicked",

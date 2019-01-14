@@ -621,20 +621,24 @@ config_run_addedit_window(const gchar *title, GtkWindow *parent,
     if(!mailbox_name) {
         /* add window */
         dlg = gtk_dialog_new_with_buttons(title, parent,
-                GTK_DIALOG_DESTROY_WITH_PARENT, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, NULL);
+                                          GTK_DIALOG_DESTROY_WITH_PARENT,
+                                          _("Close"), GTK_RESPONSE_CANCEL,
+                                          _("OK"), GTK_RESPONSE_ACCEPT,
+                                          NULL);
     } else {
         /* edit window */
         dlg = gtk_dialog_new_with_buttons(title, parent,
-                GTK_DIALOG_DESTROY_WITH_PARENT, GTK_STOCK_CLOSE, GTK_RESPONSE_ACCEPT,
-                NULL);
+                                          GTK_DIALOG_DESTROY_WITH_PARENT,
+                                          _("Close"), GTK_RESPONSE_ACCEPT,
+                                          NULL);
     }
     gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
 
     topvbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
     gtk_container_set_border_width(GTK_CONTAINER(topvbox), BORDER);
     gtk_widget_show(topvbox);
-    gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(dlg)), topvbox, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dlg))),
+                       topvbox, TRUE, TRUE, 0);
 
     hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2);
     gtk_widget_show(hbox);
@@ -659,9 +663,10 @@ config_run_addedit_window(const gchar *title, GtkWindow *parent,
             *new_mailbox_name = gtk_editable_get_chars(GTK_EDITABLE(entry), 0, -1);
             if(!*new_mailbox_name || !**new_mailbox_name) {
                 xfce_message_dialog(GTK_WINDOW(dlg), _("Mailwatch"),
-                        GTK_STOCK_DIALOG_ERROR, _("Mailbox name required."),
-                        _("Please enter a name for the mailbox."),
-                        GTK_STOCK_CLOSE, GTK_RESPONSE_ACCEPT, NULL);
+                                    "dialog-error", _("Mailbox name required."),
+                                    _("Please enter a name for the mailbox."),
+                                    _("Close"), GTK_RESPONSE_ACCEPT,
+                                    NULL);
                 if(*new_mailbox_name) {
                     g_free(*new_mailbox_name);
                     *new_mailbox_name = NULL;
@@ -761,14 +766,17 @@ config_ask_new_mailbox_type(XfceMailwatch *mailwatch, GtkWindow *parent)
     GList *l;
 
     dlg = gtk_dialog_new_with_buttons(_("Select Mailbox Type"), parent,
-            GTK_DIALOG_DESTROY_WITH_PARENT, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-            GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, NULL);
+                                      GTK_DIALOG_DESTROY_WITH_PARENT,
+                                      _("Close"), GTK_RESPONSE_CANCEL,
+                                      _("OK"), GTK_RESPONSE_ACCEPT,
+                                      NULL);
     gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
 
     topvbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
     gtk_container_set_border_width(GTK_CONTAINER(topvbox), BORDER);
     gtk_widget_show(topvbox);
-    gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(dlg)), topvbox, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dlg))),
+                       topvbox, TRUE, TRUE, 0);
 
     lbl = gtk_label_new(_("Select a mailbox type.  A description of the type will appear below."));
     gtk_label_set_line_wrap(GTK_LABEL(lbl), TRUE);
@@ -884,11 +892,13 @@ config_remove_btn_clicked_cb(GtkWidget *w, XfceMailwatch *mailwatch)
     mailbox = mailbox_data->mailbox;
 
     parent = GTK_WINDOW(gtk_widget_get_toplevel(mailwatch->config_treeview));
-    resp = xfce_message_dialog(parent, _("Remove Mailbox"),
-            GTK_STOCK_DIALOG_QUESTION, _("Are you sure?"),
-            _("Removing a mailbox will discard all settings, and cannot be undone."),
-            GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_REMOVE,
-            GTK_RESPONSE_ACCEPT, NULL);
+    resp = xfce_message_dialog(parent, _("Remove Mailbox"), "dialog-question",
+                               _("Are you sure?"),
+                               _("Removing a mailbox will discard all settings, "
+                               "and cannot be undone."),
+                               _("Cancel"), GTK_RESPONSE_CANCEL,
+                               _("Remove"), GTK_RESPONSE_ACCEPT,
+                               NULL);
     if(resp != GTK_RESPONSE_ACCEPT)
         return;
 
@@ -1005,13 +1015,19 @@ xfce_mailwatch_get_configuration_page(XfceMailwatch *mailwatch)
     gtk_widget_show(vbox);
     gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 0);
 
-    btn = gtk_button_new_from_stock(GTK_STOCK_ADD);
+    btn = gtk_button_new_with_mnemonic(_("_Add"));
+    gtk_button_set_image(GTK_BUTTON(btn),
+                         gtk_image_new_from_icon_name("list-add",
+                                                      GTK_ICON_SIZE_BUTTON));
     gtk_widget_show(btn);
     gtk_box_pack_start(GTK_BOX(vbox), btn, FALSE, FALSE, 0);
     g_signal_connect(G_OBJECT(btn), "clicked",
             G_CALLBACK(config_add_btn_clicked_cb), mailwatch);
 
-    btn = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+    btn = gtk_button_new_with_mnemonic(_("_Remove"));
+    gtk_button_set_image(GTK_BUTTON(btn),
+                         gtk_image_new_from_icon_name("list-remove",
+                                                      GTK_ICON_SIZE_BUTTON));
     gtk_widget_set_sensitive(btn, FALSE);
     gtk_widget_show(btn);
     gtk_box_pack_start(GTK_BOX(vbox), btn, FALSE, FALSE, 0);
@@ -1020,7 +1036,10 @@ xfce_mailwatch_get_configuration_page(XfceMailwatch *mailwatch)
     g_signal_connect(G_OBJECT(btn), "clicked",
             G_CALLBACK(config_remove_btn_clicked_cb), mailwatch);
 
-    btn = gtk_button_new_from_stock(GTK_STOCK_EDIT);
+    btn = gtk_button_new_with_mnemonic(_("_Edit"));
+    gtk_button_set_image(GTK_BUTTON(btn),
+                         gtk_image_new_from_icon_name("document-edit",
+                                                      GTK_ICON_SIZE_BUTTON));
     gtk_widget_set_sensitive(btn, FALSE);
     gtk_widget_show(btn);
     gtk_box_pack_start(GTK_BOX(vbox), btn, FALSE, FALSE, 0);
