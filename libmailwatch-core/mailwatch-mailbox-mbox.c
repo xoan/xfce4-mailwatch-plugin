@@ -395,7 +395,7 @@ mbox_get_setup_page( XfceMailwatchMailbox *mailbox )
 
     label = gtk_label_new_with_mnemonic( _( "_Interval:" ) );
     gtk_widget_show( label );
-    gtk_misc_set_alignment( GTK_MISC( label ), 1, 0.5 );
+    gtk_label_set_xalign( GTK_LABEL( label ), 1.0 );
     gtk_box_pack_start( GTK_BOX( hbox ), label, FALSE, FALSE, 0 );
 
     gtk_size_group_add_widget( GTK_SIZE_GROUP( sg ), label );
