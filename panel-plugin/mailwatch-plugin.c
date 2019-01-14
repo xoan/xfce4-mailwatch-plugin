@@ -1242,7 +1242,7 @@ static void
 mailwatch_construct(XfcePanelPlugin *plugin)
 {
     XfceMailwatchPlugin *mwp;
-    GtkWidget *mi, *img;
+    GtkWidget *mi;
     struct sigaction sa = {
         .sa_handler = SIG_IGN,
 #ifdef SA_RESTART
@@ -1292,10 +1292,7 @@ mailwatch_construct(XfcePanelPlugin *plugin)
 
     xfce_panel_plugin_set_small (plugin, TRUE);
 
-    mi = gtk_image_menu_item_new_with_label(_("Update Now"));
-    img = gtk_image_new_from_stock(GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU);
-    gtk_widget_show(img);
-    gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(mi), img);
+    mi = gtk_menu_item_new_with_label(_("Update Now"));
     gtk_widget_show(mi);
     g_signal_connect(G_OBJECT(mi), "activate",
                      G_CALLBACK(mailwatch_update_now_clicked_cb), mwp);
