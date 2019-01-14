@@ -1606,9 +1606,12 @@ imap_config_advanced_btn_clicked_cb(GtkWidget *w, gpointer user_data)
     gtk_container_add(GTK_CONTAINER(frame_bin), vbox);
 
     combo = gtk_combo_box_text_new();
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), _("Use unsecured connection"));
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), _("Use SSL/TLS on alternate port"));
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), _("Use SSL/TLS via STARTTLS"));
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo),
+                                   _("Use unsecured connection"));
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo),
+                                   _("Use SSL/TLS on alternate port"));
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo),
+                                   _("Use SSL/TLS via STARTTLS"));
 #ifdef HAVE_SSL_SUPPORT
     gtk_combo_box_set_active(GTK_COMBO_BOX(combo), imailbox->auth_type);
 #else

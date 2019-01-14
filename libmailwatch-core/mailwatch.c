@@ -787,7 +787,8 @@ config_ask_new_mailbox_type(XfceMailwatch *mailwatch, GtkWindow *parent)
     combo = gtk_combo_box_text_new();
     for(l = mailwatch->mailbox_types; l; l = l->next) {
         XfceMailwatchMailboxType *mtype = l->data;
-        gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), _(mtype->name));
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo),
+                                       _(mtype->name));
     }
     gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
     gtk_widget_show(combo);
