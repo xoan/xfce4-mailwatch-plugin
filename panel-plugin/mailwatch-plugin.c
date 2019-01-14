@@ -464,7 +464,7 @@ mailwatch_create(XfcePanelPlugin *plugin)
         xfce_message_dialog(NULL, _("Xfce Mailwatch"), "dialog-error",
                             _("The mailwatch applet cannot be added to the panel."),
                             _("It is possible that your version of GLib does not have threads support."),
-                            _("Close"), GTK_RESPONSE_ACCEPT,
+                            _("_Close"), GTK_RESPONSE_ACCEPT,
                             NULL);
         g_free(mwp);
         return NULL;
@@ -701,8 +701,7 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
 
     mwp->log_dialog = gtk_dialog_new_with_buttons(_( "Mailwatch log" ),
                                                   GTK_WINDOW(gtk_widget_get_toplevel(widget)),
-                                                  GTK_DIALOG_MODAL
-                                                  | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                  GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   NULL);
     gtk_widget_set_size_request(mwp->log_dialog, 480, 240 );
     g_signal_connect(G_OBJECT(mwp->log_dialog), "response",
@@ -836,8 +835,8 @@ mailwatch_iconbtn_clicked_cb(GtkWidget           *w,
     toplevel = gtk_widget_get_toplevel(w);
     chooser = exo_icon_chooser_dialog_new (_("Select Icon"),
                                            GTK_WINDOW(gtk_widget_get_toplevel(toplevel)),
-                                           _("Cancel"), GTK_RESPONSE_CANCEL,
-                                           _("OK"), GTK_RESPONSE_ACCEPT,
+                                           _("_Cancel"), GTK_RESPONSE_CANCEL,
+                                           _("_OK"), GTK_RESPONSE_ACCEPT,
                                            NULL);
     gtk_dialog_set_default_response(GTK_DIALOG(chooser), GTK_RESPONSE_ACCEPT);
     /* Preselect actually used icon */
@@ -976,7 +975,7 @@ mailwatch_help_clicked_cb(GtkWidget *w,
                                       _("Do you want to read the manual online?"),
                                       _("You will be redirected to the documentation website "
                                         "where the help pages are maintained."),
-                                      _("Cancel"), GTK_RESPONSE_NO,
+                                      _("_Cancel"), GTK_RESPONSE_NO,
                                       _("_Read Online"), GTK_RESPONSE_YES,
                                       NULL);
 
@@ -999,7 +998,6 @@ mailwatch_help_clicked_cb(GtkWidget *w,
     gtk_widget_grab_focus (button);
 
     /* Show the dialog without locking the mainloop. */
-    gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
     g_signal_connect (G_OBJECT (dialog), "response",
         G_CALLBACK (mailwatch_help_response_cb), mwp);
     gtk_window_present (GTK_WINDOW (dialog));

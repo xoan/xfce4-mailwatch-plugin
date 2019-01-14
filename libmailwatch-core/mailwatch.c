@@ -622,14 +622,14 @@ config_run_addedit_window(const gchar *title, GtkWindow *parent,
         /* add window */
         dlg = gtk_dialog_new_with_buttons(title, parent,
                                           GTK_DIALOG_DESTROY_WITH_PARENT,
-                                          _("Close"), GTK_RESPONSE_CANCEL,
-                                          _("OK"), GTK_RESPONSE_ACCEPT,
+                                          _("_Close"), GTK_RESPONSE_CANCEL,
+                                          _("_OK"), GTK_RESPONSE_ACCEPT,
                                           NULL);
     } else {
         /* edit window */
         dlg = gtk_dialog_new_with_buttons(title, parent,
                                           GTK_DIALOG_DESTROY_WITH_PARENT,
-                                          _("Close"), GTK_RESPONSE_ACCEPT,
+                                          _("_Close"), GTK_RESPONSE_ACCEPT,
                                           NULL);
     }
     gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
@@ -665,7 +665,7 @@ config_run_addedit_window(const gchar *title, GtkWindow *parent,
                 xfce_message_dialog(GTK_WINDOW(dlg), _("Mailwatch"),
                                     "dialog-error", _("Mailbox name required."),
                                     _("Please enter a name for the mailbox."),
-                                    _("Close"), GTK_RESPONSE_ACCEPT,
+                                    _("_Close"), GTK_RESPONSE_ACCEPT,
                                     NULL);
                 if(*new_mailbox_name) {
                     g_free(*new_mailbox_name);
@@ -767,8 +767,8 @@ config_ask_new_mailbox_type(XfceMailwatch *mailwatch, GtkWindow *parent)
 
     dlg = gtk_dialog_new_with_buttons(_("Select Mailbox Type"), parent,
                                       GTK_DIALOG_DESTROY_WITH_PARENT,
-                                      _("Close"), GTK_RESPONSE_CANCEL,
-                                      _("OK"), GTK_RESPONSE_ACCEPT,
+                                      _("_Cancel"), GTK_RESPONSE_CANCEL,
+                                      _("_OK"), GTK_RESPONSE_ACCEPT,
                                       NULL);
     gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
 
