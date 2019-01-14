@@ -395,7 +395,7 @@ mailwatch_set_size(XfcePanelPlugin     *plugin,
                                                         img_height, TRUE,
                                                         NULL);
     if (info) {
-        gtk_icon_info_free(info);
+        g_object_unref(G_OBJECT(info));
         info = NULL;
     }
 
@@ -410,7 +410,7 @@ mailwatch_set_size(XfcePanelPlugin     *plugin,
                                                         img_height, TRUE,
                                                         NULL);
     if (info) {
-        gtk_icon_info_free(info);
+        g_object_unref(G_OBJECT(info));
         info = NULL;
     }
 
