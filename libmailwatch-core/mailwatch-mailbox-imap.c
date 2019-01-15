@@ -1461,11 +1461,14 @@ imap_config_newmailfolders_btn_clicked_cb(GtkWidget *w, gpointer user_data)
                                         "text", IMAP_FOLDERS_NAME,
                                         NULL);
     {
-        GtkStyle *style;
+        GtkStyleContext *stylecontext;
+        GdkRGBA fgcolor;
+
         gtk_widget_realize(topvbox);
-        style = gtk_widget_get_style(topvbox);
-        g_object_set(G_OBJECT(render), "foreground-gdk",
-                     &style->fg[GTK_STATE_INSENSITIVE],
+        stylecontext = gtk_widget_get_style_context(GTK_WIDGET(topvbox));
+        gtk_style_context_get_color(stylecontext, GTK_STATE_FLAG_INSENSITIVE, &fgcolor);
+        g_object_set(G_OBJECT(render), "foreground-rgba",
+                     &fgcolor,
                      "foreground-set", TRUE,
                      "style", PANGO_STYLE_ITALIC,
                      "style-set", TRUE,
