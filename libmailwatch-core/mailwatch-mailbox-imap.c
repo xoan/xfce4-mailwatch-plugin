@@ -688,8 +688,7 @@ imap_check_mail_th(gpointer user_data)
         imap_send(imailbox, net_conn, "ABCD LOGOUT\r\n");
 
     if(mailboxes_to_check) {
-        g_list_foreach(mailboxes_to_check, (GFunc)g_free, NULL);
-        g_list_free(mailboxes_to_check);
+        g_list_free_full(mailboxes_to_check, g_free);
     }
 
     xfce_mailwatch_net_conn_destroy(net_conn);
