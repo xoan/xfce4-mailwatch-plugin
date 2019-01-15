@@ -1024,31 +1024,15 @@ xfce_mailwatch_get_configuration_page(XfceMailwatch *mailwatch)
     gtk_widget_show(vbox);
     gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 0);
 
-    btn = gtk_button_new_with_mnemonic(_("_Add"));
-    gtk_button_set_image(GTK_BUTTON(btn),
-                         gtk_image_new_from_icon_name("list-add",
-                                                      GTK_ICON_SIZE_BUTTON));
+    btn = gtk_button_new_from_icon_name("list-add", GTK_ICON_SIZE_BUTTON);
+    gtk_widget_set_tooltip_text(btn, _("Add Mailbox"));
     gtk_widget_show(btn);
     gtk_box_pack_start(GTK_BOX(vbox), btn, FALSE, FALSE, 0);
     g_signal_connect(G_OBJECT(btn), "clicked",
             G_CALLBACK(config_add_btn_clicked_cb), mailwatch);
 
-    btn = gtk_button_new_with_mnemonic(_("_Remove"));
-    gtk_button_set_image(GTK_BUTTON(btn),
-                         gtk_image_new_from_icon_name("list-remove",
-                                                      GTK_ICON_SIZE_BUTTON));
-    gtk_widget_set_sensitive(btn, FALSE);
-    gtk_widget_show(btn);
-    gtk_box_pack_start(GTK_BOX(vbox), btn, FALSE, FALSE, 0);
-    g_signal_connect_after(G_OBJECT(sel), "changed",
-            G_CALLBACK(config_set_button_sensitive), btn);
-    g_signal_connect(G_OBJECT(btn), "clicked",
-            G_CALLBACK(config_remove_btn_clicked_cb), mailwatch);
-
-    btn = gtk_button_new_with_mnemonic(_("_Edit"));
-    gtk_button_set_image(GTK_BUTTON(btn),
-                         gtk_image_new_from_icon_name("document-edit",
-                                                      GTK_ICON_SIZE_BUTTON));
+    btn = gtk_button_new_from_icon_name("document-edit", GTK_ICON_SIZE_BUTTON);
+    gtk_widget_set_tooltip_text(btn, _("Edit Mailbox"));
     gtk_widget_set_sensitive(btn, FALSE);
     gtk_widget_show(btn);
     gtk_box_pack_start(GTK_BOX(vbox), btn, FALSE, FALSE, 0);
@@ -1056,6 +1040,16 @@ xfce_mailwatch_get_configuration_page(XfceMailwatch *mailwatch)
             G_CALLBACK(config_set_button_sensitive), btn);
     g_signal_connect(G_OBJECT(btn), "clicked",
             G_CALLBACK(config_edit_btn_clicked_cb), mailwatch);
+
+    btn = gtk_button_new_from_icon_name("list-remove", GTK_ICON_SIZE_BUTTON);
+    gtk_widget_set_tooltip_text(btn, _("Remove Mailbox"));
+    gtk_widget_set_sensitive(btn, FALSE);
+    gtk_widget_show(btn);
+    gtk_box_pack_start(GTK_BOX(vbox), btn, FALSE, FALSE, 0);
+    g_signal_connect_after(G_OBJECT(sel), "changed",
+            G_CALLBACK(config_set_button_sensitive), btn);
+    g_signal_connect(G_OBJECT(btn), "clicked",
+            G_CALLBACK(config_remove_btn_clicked_cb), mailwatch);
 
     return GTK_CONTAINER(frame);
 }
