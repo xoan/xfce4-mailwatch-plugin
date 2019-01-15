@@ -696,7 +696,7 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
                                                   GTK_WINDOW(gtk_widget_get_toplevel(widget)),
                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   NULL, NULL);
-    gtk_widget_set_size_request(mwp->log_dialog, 480, 240 );
+    gtk_window_set_default_size(GTK_WINDOW(mwp->log_dialog), 480, 240 );
     gtk_button_box_set_layout(GTK_BUTTON_BOX(exo_gtk_dialog_get_action_area(GTK_DIALOG(mwp->log_dialog))),
                               GTK_BUTTONBOX_EDGE);
     g_signal_connect(G_OBJECT(mwp->log_dialog), "response",

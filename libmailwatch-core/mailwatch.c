@@ -754,7 +754,6 @@ config_ask_combo_changed_cb(GtkComboBox *cb, gpointer user_data)
     XfceMailwatch *mailwatch = user_data;
     gint active_index = gtk_combo_box_get_active(cb);
     XfceMailwatchMailboxType *mbox_type;
-    GtkRequisition req;
 
     if(active_index >= (gint)g_list_length(mailwatch->mailbox_types))
         return;
@@ -763,8 +762,6 @@ config_ask_combo_changed_cb(GtkComboBox *cb, gpointer user_data)
 
     gtk_label_set_text(GTK_LABEL(mailwatch->mbox_types_lbl),
             _(mbox_type->description));
-    gtk_widget_set_size_request(mailwatch->mbox_types_lbl, -1, -1);
-    gtk_widget_size_request(mailwatch->mbox_types_lbl, &req);
 }
 
 
@@ -781,6 +778,7 @@ config_ask_new_mailbox_type(XfceMailwatch *mailwatch, GtkWindow *parent)
                                       _("_OK"), GTK_RESPONSE_ACCEPT,
                                       NULL);
     gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
+    gtk_window_set_default_size(GTK_WINDOW(dlg), 0, -1 );
 
     topvbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
     gtk_container_set_border_width(GTK_CONTAINER(topvbox), BORDER);
@@ -789,7 +787,6 @@ config_ask_new_mailbox_type(XfceMailwatch *mailwatch, GtkWindow *parent)
                        topvbox, TRUE, TRUE, 0);
 
     lbl = gtk_label_new(_("Select a mailbox type.  A description of the type will appear below."));
-    gtk_label_set_line_wrap(GTK_LABEL(lbl), TRUE);
     gtk_label_set_xalign(GTK_LABEL(lbl), 0.0);
     gtk_widget_show(lbl);
     gtk_box_pack_start(GTK_BOX(topvbox), lbl, FALSE, FALSE, 0);
