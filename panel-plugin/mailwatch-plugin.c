@@ -686,8 +686,7 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
                               gpointer   user_data )
 {
     XfceMailwatchPlugin     *mwp = user_data;
-    GtkWidget               *vbox, *hbox, *scrollw, *treeview, *button, *lbl,
-                            *sbtn, *chk;
+    GtkWidget               *vbox, *scrollw, *treeview, *button;
 
     if (mwp->log_dialog) {
         gtk_window_present(GTK_WINDOW(mwp->log_dialog));
@@ -704,6 +703,8 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   NULL, NULL);
     gtk_widget_set_size_request(mwp->log_dialog, 480, 240 );
+    gtk_button_box_set_layout(GTK_BUTTON_BOX(exo_gtk_dialog_get_action_area(GTK_DIALOG(mwp->log_dialog))),
+                              GTK_BUTTONBOX_EDGE);
     g_signal_connect(G_OBJECT(mwp->log_dialog), "response",
                      G_CALLBACK(mailwatch_log_window_response_cb), mwp->loglist);
     g_signal_connect_swapped(G_OBJECT(mwp->log_dialog), "destroy",
@@ -752,32 +753,10 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
     gtk_widget_show( treeview );
     gtk_container_add( GTK_CONTAINER( scrollw ), treeview );
 
-    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2);
-    gtk_widget_show(hbox);
-    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
-
-    lbl = gtk_label_new_with_mnemonic(_("Log _lines:"));
-    gtk_widget_show(lbl);
-    gtk_box_pack_start(GTK_BOX(hbox), lbl, FALSE, FALSE, 0);
-
-    sbtn = gtk_spin_button_new_with_range(0.0, G_MAXDOUBLE, 1.0);
-    gtk_spin_button_set_digits(GTK_SPIN_BUTTON(sbtn), 0);
-    gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(sbtn), TRUE);
-    gtk_spin_button_set_value(GTK_SPIN_BUTTON(sbtn), mwp->log_lines);
-    gtk_widget_show(sbtn);
-    gtk_box_pack_start(GTK_BOX(hbox), sbtn, FALSE, FALSE, 0);
-    g_signal_connect(G_OBJECT(sbtn), "value-changed",
-                     G_CALLBACK(mailwatch_log_lines_changed_cb), mwp);
-    gtk_label_set_mnemonic_widget(GTK_LABEL(lbl), sbtn);
-
-    chk = gtk_check_button_new_with_mnemonic(_("Show log _status in icon"));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chk), mwp->show_log_status);
-    gtk_widget_show(chk);
-    gtk_box_pack_start(GTK_BOX(vbox), chk, FALSE, FALSE, 0);
-    g_signal_connect(G_OBJECT(chk), "toggled",
-                     G_CALLBACK(mailwatch_log_status_toggled_cb), mwp);
-
     button = gtk_button_new_with_mnemonic(_("C_lear"));
+    gtk_button_set_image(GTK_BUTTON(button),
+                         gtk_image_new_from_icon_name("edit-clear",
+                                                      GTK_ICON_SIZE_BUTTON));
     gtk_widget_show( button );
     gtk_dialog_add_action_widget(GTK_DIALOG(mwp->log_dialog), button,
                                  XFCE_MAILWATCH_RESPONSE_CLEAR);
@@ -1018,7 +997,7 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
                          XfceMailwatchPlugin *mwp)
 {
     GtkWidget *dlg, *topvbox, *frame, *frame_bin, *grid, *hbox, *lbl, *entry,
-              *btn, *vbox, *img;
+              *btn, *vbox, *img, *sbtn, *chk;
     GtkContainer *cfg_page;
     GtkSizeGroup *sg;
 
@@ -1036,24 +1015,11 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
     gtk_window_set_icon_name(GTK_WINDOW(dlg), "xfce4-settings");
 
     btn = gtk_button_new_with_mnemonic(_("_Help"));
-    gtk_button_set_image(GTK_BUTTON(btn),
-                         gtk_image_new_from_icon_name("help-contents",
-                                                      GTK_ICON_SIZE_BUTTON));
     gtk_box_pack_start(GTK_BOX(exo_gtk_dialog_get_action_area(GTK_DIALOG(dlg))),
                        btn, FALSE, FALSE, 0);
 
     g_signal_connect(G_OBJECT(btn), "clicked",
                      G_CALLBACK(mailwatch_help_clicked_cb), mwp);
-
-    btn = gtk_button_new_with_mnemonic(_("_View Log..."));
-    gtk_button_set_image(GTK_BUTTON(btn),
-                         gtk_image_new_from_icon_name("edit-find",
-                                                      GTK_ICON_SIZE_BUTTON));
-    gtk_box_pack_start(GTK_BOX(exo_gtk_dialog_get_action_area(GTK_DIALOG(dlg))),
-                       btn, FALSE, FALSE, 0);
-
-    g_signal_connect(G_OBJECT(btn), "clicked",
-                     G_CALLBACK(mailwatch_view_log_clicked_cb), mwp);
 
     btn = gtk_button_new_with_mnemonic(_("_Close"));
     gtk_dialog_add_action_widget(GTK_DIALOG(dlg), btn, GTK_RESPONSE_ACCEPT);
@@ -1160,6 +1126,43 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
 
     hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2);
     gtk_box_pack_start(GTK_BOX(topvbox), hbox, FALSE, FALSE, 0);
+
+    /* Log */
+    frame = xfce_gtk_frame_box_new(_("Log"), &frame_bin);
+    gtk_box_pack_start(GTK_BOX(topvbox), frame, FALSE, FALSE, 0);
+
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
+    gtk_container_add(GTK_CONTAINER(frame_bin), vbox);
+
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2);
+    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
+
+    lbl = gtk_label_new_with_mnemonic(_("Log _lines:"));
+    gtk_box_pack_start(GTK_BOX(hbox), lbl, FALSE, FALSE, 0);
+
+    sbtn = gtk_spin_button_new_with_range(0.0, G_MAXDOUBLE, 1.0);
+    gtk_spin_button_set_digits(GTK_SPIN_BUTTON(sbtn), 0);
+    gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(sbtn), TRUE);
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(sbtn), mwp->log_lines);
+    gtk_box_pack_start(GTK_BOX(hbox), sbtn, FALSE, FALSE, 0);
+    g_signal_connect(G_OBJECT(sbtn), "value-changed",
+                     G_CALLBACK(mailwatch_log_lines_changed_cb), mwp);
+    gtk_label_set_mnemonic_widget(GTK_LABEL(lbl), sbtn);
+
+    btn = gtk_button_new_with_mnemonic(_("_View Log..."));
+    gtk_button_set_image(GTK_BUTTON(btn),
+                         gtk_image_new_from_icon_name("document-properties",
+                                                      GTK_ICON_SIZE_BUTTON));
+    gtk_box_pack_end(GTK_BOX(hbox), btn, FALSE, FALSE, 0);
+
+    g_signal_connect(G_OBJECT(btn), "clicked",
+                     G_CALLBACK(mailwatch_view_log_clicked_cb), mwp);
+
+    chk = gtk_check_button_new_with_mnemonic(_("Show log _status in icon"));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chk), mwp->show_log_status);
+    gtk_box_pack_start(GTK_BOX(vbox), chk, FALSE, FALSE, 0);
+    g_signal_connect(G_OBJECT(chk), "toggled",
+                     G_CALLBACK(mailwatch_log_status_toggled_cb), mwp);
 
     gtk_widget_show_all(dlg);
 }

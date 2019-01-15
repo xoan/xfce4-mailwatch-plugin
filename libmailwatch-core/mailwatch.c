@@ -622,7 +622,7 @@ config_run_addedit_window(const gchar *title, GtkWindow *parent,
         /* add window */
         dlg = gtk_dialog_new_with_buttons(title, parent,
                                           GTK_DIALOG_DESTROY_WITH_PARENT,
-                                          _("_Close"), GTK_RESPONSE_CANCEL,
+                                          _("_Cancel"), GTK_RESPONSE_CANCEL,
                                           _("_OK"), GTK_RESPONSE_ACCEPT,
                                           NULL);
     } else {
