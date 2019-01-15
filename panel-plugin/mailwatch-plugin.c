@@ -163,8 +163,8 @@ mailwatch_new_messages_changed_cb(XfceMailwatch *mailwatch,
             gint i;
 
             g_string_append_printf(ttip_str,
-                                   ngettext("You have %d new message:",
-                                            "You have %d new messages:",
+                                   ngettext("<big><b>You have %d new message</b></big>",
+                                            "<big><b>You have %d new messages</b></big>",
                                             new_messages), new_messages);
 
             xfce_mailwatch_get_new_message_breakdown(mwp->mailwatch,
@@ -173,7 +173,8 @@ mailwatch_new_messages_changed_cb(XfceMailwatch *mailwatch,
                 if (new_message_counts[i] > 0) {
                     g_string_append_c(ttip_str, '\n');
                     g_string_append_printf(ttip_str,
-                                           Q_("tells how many new messages in each mailbox|    %d in %s"),
+                                           /* Messages in mailbox */
+                                           _("%d in %s"),
                                            new_message_counts[i],
                                            mailbox_names[i]);
                 }
@@ -182,7 +183,7 @@ mailwatch_new_messages_changed_cb(XfceMailwatch *mailwatch,
             g_strfreev(mailbox_names);
             g_free(new_message_counts);
 
-            gtk_widget_set_tooltip_text(mwp->button, ttip_str->str);
+            gtk_widget_set_tooltip_markup(mwp->button, ttip_str->str);
             gtk_widget_trigger_tooltip_query(mwp->button);
             g_string_free(ttip_str, TRUE);
             /* Run command when count of new messages changes from
