@@ -190,7 +190,7 @@ pop3_send_login_info(XfceMailwatchPOP3Mailbox *pmailbox, const gchar *username,
     /* see if CRAM-MD5 is supported */
     g_strlcpy(buf, "CAPA\r\n", BUFSIZE);
     bout = pop3_send(pmailbox, buf);
-    if(bout != strlen(buf))
+    if(bout != (gint)strlen(buf))
         return FALSE;
 
     bin = pop3_recv_command(pmailbox, buf, BUFSIZE, TRUE);
@@ -203,7 +203,7 @@ pop3_send_login_info(XfceMailwatchPOP3Mailbox *pmailbox, const gchar *username,
         /* server supports CRAM-MD5 */
         g_strlcpy(buf, "AUTH CRAM-MD5\r\n", BUFSIZE);
         bout = pop3_send(pmailbox, buf);
-        if(bout != strlen(buf))
+        if(bout != (gint)strlen(buf))
             return FALSE;
 
         bin = pop3_recv(pmailbox, buf, BUFSIZE);
@@ -229,7 +229,7 @@ pop3_send_login_info(XfceMailwatchPOP3Mailbox *pmailbox, const gchar *username,
             g_strlcat(buf, "\r\n", BUFSIZE);
             g_free(response_base64);
             bout = pop3_send(pmailbox, buf);
-            if(bout != strlen(buf))
+            if(bout != (gint)strlen(buf))
                 return FALSE;
 
             bin = pop3_recv_command(pmailbox, buf, BUFSIZE, FALSE);

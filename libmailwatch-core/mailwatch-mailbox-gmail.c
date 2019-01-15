@@ -222,7 +222,7 @@ gmail_check_atom_feed(XfceMailwatchGMailMailbox *gmailbox,
                GMAIL_ATOMURI, GMAIL_HOST, port, PACKAGE, VERSION, base64_creds);
     g_free(base64_creds);
 
-    if(gmail_send(gmailbox, buf) != strlen(buf)) {
+    if(gmail_send(gmailbox, buf) != (gssize)strlen(buf)) {
         DBG("failed to send req");
         goto cleanup;
     }

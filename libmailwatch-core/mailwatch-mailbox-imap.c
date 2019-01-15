@@ -289,7 +289,7 @@ imap_send_login_info(XfceMailwatchIMAPMailbox *imailbox,
         g_snprintf(buf, BUFSIZE, "%05d AUTHENTICATE CRAM-MD5\r\n",
                    ++imailbox->imap_tag);
         bout = imap_send(imailbox, net_conn, buf);
-        if(bout != strlen(buf))
+        if(bout != (gint)strlen(buf))
             goto cleanuperr;
 
         bin = imap_recv(imailbox, net_conn, buf, BUFSIZE);
@@ -316,7 +316,7 @@ imap_send_login_info(XfceMailwatchIMAPMailbox *imailbox,
             g_free(response_base64);
             bout = imap_send(imailbox, net_conn, buf);
             DBG("sent CRAM-MD5 response: %s\n", buf);
-            if(bout != strlen(buf))
+            if(bout != (gint)strlen(buf))
                 goto cleanuperr;
 
             bin = imap_recv_command(imailbox, net_conn, buf, BUFSIZE);
