@@ -207,9 +207,6 @@ mailwatch_button_press_cb(GtkWidget      *w,
                           GdkEventButton *evt,
                           gpointer        user_data)
 {
-    if (evt->button == MOUSE_BUTTON_MIDDLE)
-        gtk_button_pressed(GTK_BUTTON(w));
-
     return FALSE;
 }
 
@@ -241,9 +238,6 @@ mailwatch_button_release_cb(GtkWidget      *w,
                 break;
         }
     }
-
-    if (evt->button == MOUSE_BUTTON_MIDDLE)
-        gtk_button_released(GTK_BUTTON(w));
 
     return FALSE;
 }
