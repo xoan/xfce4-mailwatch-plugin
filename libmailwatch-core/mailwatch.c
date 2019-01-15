@@ -119,10 +119,10 @@ xfce_mailwatch_new(void)
 #if !GLIB_CHECK_VERSION (2, 32, 0)
     if(!g_thread_supported()) {
         g_thread_init(NULL);
-￼	    if(!g_thread_supported()) {
-￼	        g_critical(_("xfce4-mailwatch-plugin: Unable to initialise GThread support.  This is likely a problem with your GLib install."));
-￼	        return NULL;
-￼	    }
+        if(!g_thread_supported()) {
+            g_critical(_("xfce4-mailwatch-plugin: Unable to initialise GThread support.  This is likely a problem with your GLib install."));
+            return NULL;
+        }
     }
 #endif
 
