@@ -116,6 +116,16 @@ xfce_mailwatch_new(void)
 
     xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
 
+#if !GLIB_CHECK_VERSION (2, 32, 0)
+    if(!g_thread_supported()) {
+        g_thread_init(NULL);
+￼	    if(!g_thread_supported()) {
+￼	        g_critical(_("xfce4-mailwatch-plugin: Unable to initialise GThread support.  This is likely a problem with your GLib install."));
+￼	        return NULL;
+￼	    }
+    }
+#endif
+
     mailwatch = g_new0(XfceMailwatch, 1);
     mailwatch->mailbox_types = mailwatch_load_mailbox_types();
     mailwatch->mailboxes_mx = g_mutex_new();

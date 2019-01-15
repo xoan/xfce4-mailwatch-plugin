@@ -217,7 +217,6 @@ mbox_check_mail_timeout( gpointer data )
 {
     XfceMailwatchMboxMailbox    *mbox = XFCE_MAILWATCH_MBOX_MAILBOX( data );
     GThread                     *th;
-    GError                      *error = NULL;
 
     if( g_atomic_pointer_get( &mbox->thread ) ) {
         xfce_mailwatch_log_message( mbox->mailwatch,
@@ -227,7 +226,11 @@ mbox_check_mail_timeout( gpointer data )
         return TRUE;
     }
 
-    th = g_thread_try_new( NULL, mbox_check_mail_thread, mbox, &error );
+#if GLIB_CHECK_VERSION (2, 32, 0)
+    th = g_thread_try_new( NULL, mbox_check_mail_thread, mbox, NULL );
+#else
+    th = g_thread_create( mbox_check_mail_thread, mbox, FALSE, NULL );
+#endif
     g_atomic_pointer_set( &mbox->thread, th );
 
     return TRUE;

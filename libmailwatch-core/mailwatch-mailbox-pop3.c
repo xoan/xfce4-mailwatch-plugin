@@ -540,7 +540,6 @@ pop3_check_mail_timeout(gpointer data)
 {
     XfceMailwatchPOP3Mailbox *pmailbox = data;
     GThread *new_th;
-    GError  *error = NULL;
 
     if(g_atomic_pointer_get(&pmailbox->th)) {
         xfce_mailwatch_log_message(pmailbox->mailwatch,
@@ -550,7 +549,11 @@ pop3_check_mail_timeout(gpointer data)
         return TRUE;
     }
 
-    new_th = g_thread_try_new(NULL, pop3_check_mail_th, pmailbox, &error);
+#if GLIB_CHECK_VERSION (2, 32, 0)
+    new_th = g_thread_try_new(NULL, pop3_check_mail_th, pmailbox, NULL);
+#else
+    new_th = g_thread_create(pop3_check_mail_th, pmailbox, FALSE, NULL);
+#endif
     g_atomic_pointer_set(&pmailbox->th, new_th);
 
     return TRUE;
