@@ -293,10 +293,8 @@ mailwatch_get_mini_icon(GtkWidget   *dummy,
 {
     GdkPixbuf *pix;
 
-    pix = gtk_widget_render_icon(dummy,
-                                 icon_name,
-                                 GTK_ICON_SIZE_DIALOG,
-                                 NULL);
+    pix = gtk_icon_theme_load_icon(gtk_icon_theme_get_default (), icon_name,
+                                   48, GTK_ICON_LOOKUP_GENERIC_FALLBACK, NULL);
     if (pix) {
         if (size / 2 != gdk_pixbuf_get_width(pix)) {
             GdkPixbuf *tmp = gdk_pixbuf_scale_simple(pix, size / 2,
@@ -342,26 +340,43 @@ mailwatch_set_size(XfcePanelPlugin     *plugin,
                    gint                 wsize,
                    XfceMailwatchPlugin *mwp)
 {
-    gint size, img_width, img_height, width, height, i;
+    gint size, isize, img_width, img_height, width, height, i;
     const gchar *icon;
     GdkPixbuf *pb;
     GtkIconTheme *itheme;
     GtkIconInfo *info = NULL;
 
+    GtkBorder button_padding;
+    gint xthickness;
+    gint ythickness;
+
+    /* The plugin only occupies a single row */
     wsize /= xfce_panel_plugin_get_nrows (plugin);
 
-    /* this is such lame lame voodoo magic.  the x/ythickness stuff
-     * shouldn't be needed, since i think the panel button convienence
-     * thingo sets them to zero, but we'll leave it for now.  i'm
-     * not sure where the '- 2' at the end comes from. */
-    size = wsize - MAX(gtk_widget_get_style(GTK_WIDGET(mwp->button))->xthickness,
-                       gtk_widget_get_style(GTK_WIDGET(mwp->button))->ythickness) * 2 - 2;
+    gtk_style_context_get_padding (gtk_widget_get_style_context (GTK_WIDGET (mwp->button)),
+                                   GTK_STATE_FLAG_NORMAL, &button_padding);
+    xthickness = button_padding.left + button_padding.right;
+    ythickness = button_padding.top + button_padding.bottom;
+
+    /* Calculate the size of the space left for the icon */
+    size = wsize - 2 - MAX(xthickness, ythickness);
+
+    /* Since symbolic icons are usually only provided in 16px we
+     * try to be clever and use size steps */
+    if (size <= 21)
+        isize = 16;
+    else if (size >=22 && size <= 29)
+        isize = 24;
+    else if (size >= 30 && size <= 40)
+        isize = 32;
+    else
+        isize = size;
 
     if(xfce_panel_plugin_get_orientation(plugin) == GTK_ORIENTATION_HORIZONTAL) {
         img_width = -1;
-        img_height = size;
+        img_height = isize;
     } else {
-        img_width = size;
+        img_width = isize;
         img_height = -1;
     }
 
@@ -380,7 +395,7 @@ mailwatch_set_size(XfcePanelPlugin     *plugin,
 
     icon = mwp->normal_icon ? mwp->normal_icon : DEFAULT_NORMAL_ICON;
     if (!g_path_is_absolute(icon)) {
-        info = gtk_icon_theme_lookup_icon(itheme, icon, size, 0);
+        info = gtk_icon_theme_lookup_icon(itheme, icon, isize, 0);
         if (info)
             icon = gtk_icon_info_get_filename(info);
     }
@@ -395,7 +410,7 @@ mailwatch_set_size(XfcePanelPlugin     *plugin,
 
     icon = mwp->new_mail_icon ? mwp->new_mail_icon : DEFAULT_NEW_MAIL_ICON;
     if (!g_path_is_absolute(icon)) {
-        info = gtk_icon_theme_lookup_icon(itheme, icon, size, 0);
+        info = gtk_icon_theme_lookup_icon(itheme, icon, isize, 0);
         if (info)
             icon = gtk_icon_info_get_filename(info);
     }
@@ -423,14 +438,13 @@ mailwatch_set_size(XfcePanelPlugin     *plugin,
      * main icon as a base for the mini icons to ensure they aren't too
      * large in the smaller dimension */
     mwp->pix_log[XFCE_MAILWATCH_LOG_INFO] =
-            mailwatch_get_mini_icon(GTK_WIDGET(plugin), GTK_STOCK_DIALOG_INFO,
+            mailwatch_get_mini_icon(GTK_WIDGET(plugin), "dialog-info",
                                     width < height ? width : height);
     mwp->pix_log[XFCE_MAILWATCH_LOG_WARNING] =
-            mailwatch_get_mini_icon(GTK_WIDGET(plugin),
-                                    GTK_STOCK_DIALOG_WARNING,
+            mailwatch_get_mini_icon(GTK_WIDGET(plugin), "dialog-warning",
                                     width < height ? width : height);
     mwp->pix_log[XFCE_MAILWATCH_LOG_ERROR] =
-            mailwatch_get_mini_icon(GTK_WIDGET(plugin), GTK_STOCK_DIALOG_ERROR,
+            mailwatch_get_mini_icon(GTK_WIDGET(plugin), "dialog-error",
                                     width < height ? width : height);
 
     pb = mailwatch_build_icon(mwp, mwp->newmail_icon_visible);
@@ -439,8 +453,8 @@ mailwatch_set_size(XfcePanelPlugin     *plugin,
     gtk_image_set_from_pixbuf(GTK_IMAGE(mwp->image), pb);
     g_object_unref(G_OBJECT(pb));
 
-    width += wsize - size;
-    height += wsize - size;
+    width += wsize - isize;
+    height += wsize - isize;
     gtk_widget_set_size_request(mwp->button, width, height);
 
     return TRUE;
