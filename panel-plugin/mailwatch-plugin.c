@@ -408,7 +408,7 @@ mailwatch_set_size(XfcePanelPlugin     *plugin,
      * main icon as a base for the mini icons to ensure they aren't too
      * large in the smaller dimension */
     mwp->pix_log[XFCE_MAILWATCH_LOG_INFO] =
-            mailwatch_get_mini_icon(GTK_WIDGET(plugin), "dialog-info",
+            mailwatch_get_mini_icon(GTK_WIDGET(plugin), "dialog-information",
                                     width < height ? width : height);
     mwp->pix_log[XFCE_MAILWATCH_LOG_WARNING] =
             mailwatch_get_mini_icon(GTK_WIDGET(plugin), "dialog-warning",
