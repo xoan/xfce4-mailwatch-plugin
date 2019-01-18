@@ -121,6 +121,12 @@ typedef enum
 
 
 #ifdef HAVE_SSL_SUPPORT
+#define GNUTLS_CA_FILE "ca.pem"
+
+/* libgcrypt >= 1.6 does not support custom callbacks */
+#if (GCRYPT_VERSION_NUMBER >= 0x010600)
+GCRY_THREAD_OPTION_PTHREAD_IMPL;
+#else
 
 /* missing from 1.2.0? */
 #ifndef _GCRY_PTH_SOCKADDR
@@ -130,9 +136,7 @@ typedef enum
 #define _GCRY_PTH_SOCKLEN_T socklen_t
 #endif
 
-#define GNUTLS_CA_FILE           "ca.pem"
-
-/* stuff to support 'gthreads' with gcrypt */
+/* stuff to support 'gthreads' with gcrypt < 1.6 */
 static int my_g_mutex_init(void **priv);
 static int my_g_mutex_destroy(void **priv);
 static int my_g_mutex_lock(void **priv);
@@ -195,11 +199,8 @@ my_g_mutex_unlock(void **priv)
     return 0;
 }
 
-#endif  /* defined(HAVE_SSL_SUPPORT) */
+#endif /* GCRYPT_VERSION_NUMBER */
 
-
-
-#ifdef HAVE_SSL_SUPPORT
 static gboolean
 xfce_mailwatch_net_conn_tls_handshake(XfceMailwatchNetConn *net_conn,
                                       GError **error)
@@ -235,7 +236,7 @@ xfce_mailwatch_net_conn_tls_handshake(XfceMailwatchNetConn *net_conn,
 
     return TRUE;
 }
-#endif
+#endif /* HAVE_SSL_SUPPORT */
 
 static XfceMailwatchNetConnStatus
 xfce_mailwatch_net_conn_do_connect(XfceMailwatchNetConn *net_conn,
@@ -364,7 +365,11 @@ xfce_mailwatch_net_conn_init(void)
 
     if(!__inited) {
 #ifdef HAVE_SSL_SUPPORT
+#if (GCRYPT_VERSION_NUMBER >= 0x010600)
+        gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread);
+#else
         gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_gthread);
+#endif
         gnutls_global_init();
 #endif
         __inited = TRUE;
