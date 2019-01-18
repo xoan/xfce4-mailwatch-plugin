@@ -95,7 +95,7 @@ struct _XfceMailwatchNetConn
     guint port;
     const gchar *line_terminator;
 
-    gint fd;
+    glong fd;
     gint actual_port;
 
     guchar *buffer;
