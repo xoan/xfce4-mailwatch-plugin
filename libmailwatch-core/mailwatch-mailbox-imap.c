@@ -1467,7 +1467,7 @@ imap_config_newmailfolders_btn_clicked_cb(GtkWidget *w, gpointer user_data)
     render = gtk_cell_renderer_pixbuf_new();
     gtk_tree_view_column_pack_start(col, render, FALSE);
     g_object_set(G_OBJECT(render),
-                 "icon-name", "folder",
+                 "icon-name", "folder-symbolic",
                  "stock-size", GTK_ICON_SIZE_MENU,
                  NULL);
 
@@ -1515,7 +1515,7 @@ imap_config_newmailfolders_btn_clicked_cb(GtkWidget *w, gpointer user_data)
 
     imailbox->refresh_btn = btn = gtk_button_new_with_mnemonic(_("_Refresh"));
     gtk_button_set_image(GTK_BUTTON(btn),
-                         gtk_image_new_from_icon_name("view-refresh",
+                         gtk_image_new_from_icon_name("view-refresh-symbolic",
                                                       GTK_ICON_SIZE_BUTTON));
     gtk_widget_show(btn);
     gtk_box_pack_start(GTK_BOX(vbox), btn, FALSE, FALSE, 0);
@@ -1799,7 +1799,7 @@ imap_get_setup_page(XfceMailwatchMailbox *mailbox)
 
     btn = gtk_button_new_with_mnemonic(_("_Advanced..."));
     gtk_button_set_image(GTK_BUTTON(btn),
-                         gtk_image_new_from_icon_name("preferences-other",
+                         gtk_image_new_from_icon_name("preferences-other-symbolic",
                                                       GTK_ICON_SIZE_BUTTON));
     gtk_widget_show(btn);
     gtk_box_pack_start(GTK_BOX(hbox), btn, FALSE, FALSE, 0);
@@ -1808,7 +1808,7 @@ imap_get_setup_page(XfceMailwatchMailbox *mailbox)
 
     btn = gtk_button_new_with_mnemonic(_("New mail _folders..."));
     gtk_button_set_image(GTK_BUTTON(btn),
-                         gtk_image_new_from_icon_name("folder",
+                         gtk_image_new_from_icon_name("folder-symbolic",
                                                       GTK_ICON_SIZE_BUTTON));
     gtk_widget_show(btn);
     gtk_box_pack_start(GTK_BOX(hbox), btn, FALSE, FALSE, 0);

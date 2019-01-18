@@ -47,7 +47,8 @@
 #include "mailwatch-utils.h"
 #include "mailwatch-common.h"
 
-#define BORDER          8
+#define BORDER     8
+#define SW_HEIGHT 92
 
 #if GLIB_CHECK_VERSION (2, 32, 0)
 #define _mailwatch_lock(mailwatch)   g_mutex_lock(&((mailwatch)->mailboxes_mx))
@@ -982,28 +983,33 @@ config_set_button_sensitive(GtkTreeSelection *sel,
 GtkContainer *
 xfce_mailwatch_get_configuration_page(XfceMailwatch *mailwatch)
 {
-    GtkWidget *frame, *frame_bin, *vbox, *hbox, *sw, *treeview, *btn;
-    GtkListStore *ls;
-    GList *l;
-    GtkTreeIter itr;
+    GtkWidget         *frame, *frame_bin, *vbox, *sw, *treeview, *toolbar, *img;
+    GtkToolItem       *toolbtn;
+    GtkListStore      *ls;
+    GList             *l;
+    GtkTreeIter        itr;
     GtkTreeViewColumn *col;
-    GtkCellRenderer *render;
-    GtkTreeSelection *sel;
+    GtkCellRenderer   *render;
+    GtkTreeSelection  *sel;
+
+    GtkStyleContext   *context;
 
     frame = xfce_gtk_frame_box_new(_("Mailboxes"), &frame_bin);
     gtk_widget_show(frame);
 
-    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2);
-    gtk_widget_show(hbox);
-    gtk_container_add(GTK_CONTAINER(frame_bin), hbox);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    gtk_widget_show(vbox);
+    gtk_container_add(GTK_CONTAINER(frame_bin), vbox);
 
     sw = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(sw),
+            SW_HEIGHT);
     gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(sw),
             GTK_SHADOW_ETCHED_IN);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER,
-            GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw),
+            GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
     gtk_widget_show(sw);
-    gtk_box_pack_start(GTK_BOX(hbox), sw, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), sw, TRUE, TRUE, 0);
 
     /* time to make the doughnuts */
     _mailwatch_lock(mailwatch);
@@ -1040,36 +1046,42 @@ xfce_mailwatch_get_configuration_page(XfceMailwatch *mailwatch)
     gtk_tree_selection_set_mode(sel, GTK_SELECTION_SINGLE);
     gtk_tree_selection_unselect_all(sel);
 
-    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
-    gtk_widget_show(vbox);
-    gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 0);
+    toolbar = gtk_toolbar_new();
+    context = gtk_widget_get_style_context(toolbar);
+    gtk_style_context_add_class(context, "inline-toolbar");
+    gtk_box_pack_start(GTK_BOX(vbox), toolbar, FALSE, FALSE, 0);
 
-    btn = gtk_button_new_from_icon_name("list-add", GTK_ICON_SIZE_BUTTON);
-    gtk_widget_set_tooltip_text(btn, _("Add Mailbox"));
-    gtk_widget_show(btn);
-    gtk_box_pack_start(GTK_BOX(vbox), btn, FALSE, FALSE, 0);
-    g_signal_connect(G_OBJECT(btn), "clicked",
+    img = gtk_image_new_from_icon_name("list-add-symbolic",
+            GTK_ICON_SIZE_BUTTON);
+    toolbtn = gtk_tool_button_new(img, "Add");
+    gtk_widget_set_tooltip_text(GTK_WIDGET(toolbtn), _("Add Mailbox"));
+    gtk_toolbar_insert(GTK_TOOLBAR(toolbar), toolbtn, 1);
+    g_signal_connect(G_OBJECT(toolbtn), "clicked",
             G_CALLBACK(config_add_btn_clicked_cb), mailwatch);
 
-    btn = gtk_button_new_from_icon_name("document-edit", GTK_ICON_SIZE_BUTTON);
-    gtk_widget_set_tooltip_text(btn, _("Edit Mailbox"));
-    gtk_widget_set_sensitive(btn, FALSE);
-    gtk_widget_show(btn);
-    gtk_box_pack_start(GTK_BOX(vbox), btn, FALSE, FALSE, 0);
+    img = gtk_image_new_from_icon_name("document-edit-symbolic",
+            GTK_ICON_SIZE_BUTTON);
+    toolbtn = gtk_tool_button_new(img, "Edit");
+    gtk_widget_set_tooltip_text(GTK_WIDGET(toolbtn), _("Edit Mailbox"));
+    gtk_widget_set_sensitive(GTK_WIDGET(toolbtn), FALSE);
+    gtk_toolbar_insert(GTK_TOOLBAR(toolbar), toolbtn, 1);
     g_signal_connect_after(G_OBJECT(sel), "changed",
-            G_CALLBACK(config_set_button_sensitive), btn);
-    g_signal_connect(G_OBJECT(btn), "clicked",
+            G_CALLBACK(config_set_button_sensitive), toolbtn);
+    g_signal_connect(G_OBJECT(toolbtn), "clicked",
             G_CALLBACK(config_edit_btn_clicked_cb), mailwatch);
 
-    btn = gtk_button_new_from_icon_name("list-remove", GTK_ICON_SIZE_BUTTON);
-    gtk_widget_set_tooltip_text(btn, _("Remove Mailbox"));
-    gtk_widget_set_sensitive(btn, FALSE);
-    gtk_widget_show(btn);
-    gtk_box_pack_start(GTK_BOX(vbox), btn, FALSE, FALSE, 0);
+    img = gtk_image_new_from_icon_name("list-remove-symbolic",
+            GTK_ICON_SIZE_BUTTON);
+    toolbtn = gtk_tool_button_new(img, "Remove");
+    gtk_widget_set_tooltip_text(GTK_WIDGET(toolbtn), _("Remove Mailbox"));
+    gtk_widget_set_sensitive(GTK_WIDGET(toolbtn), FALSE);
+    gtk_toolbar_insert(GTK_TOOLBAR(toolbar), toolbtn, 2);
     g_signal_connect_after(G_OBJECT(sel), "changed",
-            G_CALLBACK(config_set_button_sensitive), btn);
-    g_signal_connect(G_OBJECT(btn), "clicked",
+            G_CALLBACK(config_set_button_sensitive), toolbtn);
+    g_signal_connect(G_OBJECT(toolbtn), "clicked",
             G_CALLBACK(config_remove_btn_clicked_cb), mailwatch);
+
+    gtk_widget_show_all(toolbar);
 
     return GTK_CONTAINER(frame);
 }

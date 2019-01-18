@@ -730,7 +730,7 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
 
     button = gtk_button_new_with_mnemonic(_("C_lear"));
     gtk_button_set_image(GTK_BUTTON(button),
-                         gtk_image_new_from_icon_name("edit-clear",
+                         gtk_image_new_from_icon_name("edit-clear-symbolic",
                                                       GTK_ICON_SIZE_BUTTON));
     gtk_widget_show( button );
     gtk_dialog_add_action_widget(GTK_DIALOG(mwp->log_dialog), button,
@@ -1021,7 +1021,7 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
 
     btn = gtk_button_new_with_mnemonic(_("_View Log..."));
     gtk_button_set_image(GTK_BUTTON(btn),
-                         gtk_image_new_from_icon_name("document-properties",
+                         gtk_image_new_from_icon_name("document-properties-symbolic",
                                                       GTK_ICON_SIZE_BUTTON));
     gtk_box_pack_end(GTK_BOX(hbox), btn, FALSE, FALSE, 0);
 
