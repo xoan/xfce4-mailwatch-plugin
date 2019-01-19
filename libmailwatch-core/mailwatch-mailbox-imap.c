@@ -65,6 +65,7 @@
 #include "mailwatch.h"
 
 #define BORDER                   8
+#define SW_HEIGHT                92
 
 #define XFCE_MAILWATCH_IMAP_MAILBOX(ptr) ((XfceMailwatchIMAPMailbox *)ptr)
 
@@ -113,7 +114,7 @@ typedef struct
     GtkWidget *folder_tree_dialog;
     GtkTreeStore *ts;
     GtkCellRenderer *render;
-    GtkWidget *refresh_btn;
+    GtkToolItem *refresh_btn;
     GNode *folder_tree;
 } XfceMailwatchIMAPMailbox;
 
@@ -1135,7 +1136,7 @@ imap_populate_folder_tree_nodes(gpointer user_data)
 
     g_hash_table_destroy(mailboxes_to_check);
 
-    gtk_widget_set_sensitive(imailbox->refresh_btn, TRUE);
+    gtk_widget_set_sensitive(GTK_WIDGET(imailbox->refresh_btn), TRUE);
 
     return FALSE;
 }
@@ -1160,7 +1161,7 @@ imap_populate_folder_tree_failed(gpointer user_data)
                        IMAP_FOLDERS_HOLDS_MESSAGES, FALSE,
                        -1);
 
-    gtk_widget_set_sensitive(imailbox->refresh_btn, TRUE);
+    gtk_widget_set_sensitive(GTK_WIDGET(imailbox->refresh_btn), TRUE);
 
     return FALSE;
 }
@@ -1176,7 +1177,7 @@ imap_folder_tree_th_join(gpointer user_data)
         g_thread_yield();
 
     if(imailbox->folder_tree_dialog)
-        gtk_widget_set_sensitive(imailbox->refresh_btn, TRUE);
+        gtk_widget_set_sensitive(GTK_WIDGET(imailbox->refresh_btn), TRUE);
 
     return FALSE;
 }
@@ -1296,7 +1297,7 @@ imap_config_refresh_btn_clicked_cb(GtkWidget *w, gpointer user_data)
         return;
     }
 
-    gtk_widget_set_sensitive(imailbox->refresh_btn, FALSE);
+    gtk_widget_set_sensitive(GTK_WIDGET(imailbox->refresh_btn), FALSE);
 
     gtk_tree_store_clear(imailbox->ts);
     gtk_tree_store_append(imailbox->ts, &itr, NULL);
@@ -1387,15 +1388,19 @@ static void
 imap_config_newmailfolders_btn_clicked_cb(GtkWidget *w, gpointer user_data)
 {
     XfceMailwatchIMAPMailbox *imailbox = user_data;
-    GtkWidget *dlg, *topvbox, *vbox, *hbox, *treeview, *frame, *frame_bin,
-              *btn, *sw;
-    GtkWindow *toplevel = GTK_WINDOW(gtk_widget_get_toplevel(w));
-    GtkTreeStore *ts;
-    GtkTreeIter itr;
-    GtkCellRenderer *render;
+    GtkWidget         *dlg, *topvbox, *vbox, *treeview, *frame, *frame_bin,
+                      *sw, *toolbar, *img;
+    GtkToolItem       *toolbtn;
+    GtkWindow         *toplevel = GTK_WINDOW(gtk_widget_get_toplevel(w));
+    GtkTreeStore      *ts;
+    GtkTreeIter        itr;
+    GtkCellRenderer   *render;
     GtkTreeViewColumn *col;
-    GtkTreeSelection *sel;
-    GThread *th;
+    GtkTreeSelection  *sel;
+
+    GtkStyleContext   *context;
+
+    GThread           *th;
 
     if(imailbox->folder_tree_dialog) {
         gtk_window_present(GTK_WINDOW(imailbox->folder_tree_dialog));
@@ -1440,17 +1445,19 @@ imap_config_newmailfolders_btn_clicked_cb(GtkWidget *w, gpointer user_data)
     gtk_widget_show(frame);
     gtk_box_pack_start(GTK_BOX(topvbox), frame, TRUE, TRUE, 0);
 
-    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, BORDER/2);
-    gtk_widget_show(hbox);
-    gtk_container_add(GTK_CONTAINER(frame_bin), hbox);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    gtk_widget_show(vbox);
+    gtk_container_add(GTK_CONTAINER(frame_bin), vbox);
 
     sw = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(sw),
+            SW_HEIGHT);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER,
                                    GTK_POLICY_AUTOMATIC);
     gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(sw),
                                         GTK_SHADOW_ETCHED_IN);
     gtk_widget_show(sw);
-    gtk_box_pack_start(GTK_BOX(hbox), sw, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), sw, TRUE, TRUE, 0);
 
     imailbox->ts = ts = gtk_tree_store_new(IMAP_FOLDERS_N_COLUMNS,
                                            G_TYPE_STRING, G_TYPE_BOOLEAN,
@@ -1483,11 +1490,9 @@ imap_config_newmailfolders_btn_clicked_cb(GtkWidget *w, gpointer user_data)
         gtk_widget_realize(topvbox);
         stylecontext = gtk_widget_get_style_context(GTK_WIDGET(topvbox));
         gtk_style_context_get_color(stylecontext, GTK_STATE_FLAG_INSENSITIVE, &fgcolor);
-        g_object_set(G_OBJECT(render), "foreground-rgba",
-                     &fgcolor,
+        g_object_set(G_OBJECT(render),
+                     "foreground-rgba", &fgcolor,
                      "foreground-set", TRUE,
-                     "style", PANGO_STYLE_ITALIC,
-                     "style-set", TRUE,
                      NULL);
     }
 
@@ -1509,23 +1514,29 @@ imap_config_newmailfolders_btn_clicked_cb(GtkWidget *w, gpointer user_data)
     gtk_tree_selection_set_mode(sel, GTK_SELECTION_MULTIPLE);
     gtk_tree_selection_unselect_all(sel);
 
-    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
-    gtk_widget_show(vbox);
-    gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 0);
+    toolbar = gtk_toolbar_new();
+    gtk_toolbar_set_style(GTK_TOOLBAR(toolbar), GTK_TOOLBAR_ICONS);
+    gtk_toolbar_set_icon_size(GTK_TOOLBAR(toolbar),
+            GTK_ICON_SIZE_SMALL_TOOLBAR);
+    context = gtk_widget_get_style_context(toolbar);
+    gtk_style_context_add_class(context, "inline-toolbar");
+    gtk_box_pack_start(GTK_BOX(vbox), toolbar, FALSE, FALSE, 0);
 
-    imailbox->refresh_btn = btn = gtk_button_new_with_mnemonic(_("_Refresh"));
-    gtk_button_set_image(GTK_BUTTON(btn),
-                         gtk_image_new_from_icon_name("view-refresh-symbolic",
-                                                      GTK_ICON_SIZE_BUTTON));
-    gtk_widget_show(btn);
-    gtk_box_pack_start(GTK_BOX(vbox), btn, FALSE, FALSE, 0);
-    g_object_set_data(G_OBJECT(btn), "mailwatch-treeview", treeview);
-    g_signal_connect(G_OBJECT(btn), "clicked",
+    img = gtk_image_new_from_icon_name("view-refresh-symbolic",
+            GTK_ICON_SIZE_BUTTON);
+    imailbox->refresh_btn = toolbtn = gtk_tool_button_new(img, "_Refresh");
+    gtk_tool_button_set_use_underline(GTK_TOOL_BUTTON(toolbtn), TRUE);
+    gtk_widget_set_tooltip_text(GTK_WIDGET(toolbtn), _("Refresh Folders"));
+    gtk_toolbar_insert(GTK_TOOLBAR(toolbar), toolbtn, 1);
+    g_object_set_data(G_OBJECT(toolbtn), "mailwatch-treeview", treeview);
+    g_signal_connect(G_OBJECT(toolbtn), "clicked",
                      G_CALLBACK(imap_config_refresh_btn_clicked_cb), imailbox);
 
     gtk_tree_store_append(ts, &itr, NULL);
     gtk_tree_store_set(ts, &itr, IMAP_FOLDERS_NAME, _("Please wait..."), -1);
-    gtk_widget_set_sensitive(btn, FALSE);
+    gtk_widget_set_sensitive(GTK_WIDGET(toolbtn), FALSE);
+
+    gtk_widget_show_all(toolbar);
 
     g_atomic_int_set(&imailbox->folder_tree_running, TRUE);
 #if GLIB_CHECK_VERSION (2, 32, 0)

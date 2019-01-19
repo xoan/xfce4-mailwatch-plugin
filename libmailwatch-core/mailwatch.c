@@ -1047,13 +1047,17 @@ xfce_mailwatch_get_configuration_page(XfceMailwatch *mailwatch)
     gtk_tree_selection_unselect_all(sel);
 
     toolbar = gtk_toolbar_new();
+    gtk_toolbar_set_style(GTK_TOOLBAR(toolbar), GTK_TOOLBAR_ICONS);
+    gtk_toolbar_set_icon_size(GTK_TOOLBAR(toolbar),
+            GTK_ICON_SIZE_SMALL_TOOLBAR);
     context = gtk_widget_get_style_context(toolbar);
     gtk_style_context_add_class(context, "inline-toolbar");
     gtk_box_pack_start(GTK_BOX(vbox), toolbar, FALSE, FALSE, 0);
 
     img = gtk_image_new_from_icon_name("list-add-symbolic",
             GTK_ICON_SIZE_BUTTON);
-    toolbtn = gtk_tool_button_new(img, "Add");
+    toolbtn = gtk_tool_button_new(img, "_Add");
+    gtk_tool_button_set_use_underline(GTK_TOOL_BUTTON(toolbtn), TRUE);
     gtk_widget_set_tooltip_text(GTK_WIDGET(toolbtn), _("Add Mailbox"));
     gtk_toolbar_insert(GTK_TOOLBAR(toolbar), toolbtn, 1);
     g_signal_connect(G_OBJECT(toolbtn), "clicked",
@@ -1061,7 +1065,8 @@ xfce_mailwatch_get_configuration_page(XfceMailwatch *mailwatch)
 
     img = gtk_image_new_from_icon_name("document-edit-symbolic",
             GTK_ICON_SIZE_BUTTON);
-    toolbtn = gtk_tool_button_new(img, "Edit");
+    toolbtn = gtk_tool_button_new(img, "_Edit");
+    gtk_tool_button_set_use_underline(GTK_TOOL_BUTTON(toolbtn), TRUE);
     gtk_widget_set_tooltip_text(GTK_WIDGET(toolbtn), _("Edit Mailbox"));
     gtk_widget_set_sensitive(GTK_WIDGET(toolbtn), FALSE);
     gtk_toolbar_insert(GTK_TOOLBAR(toolbar), toolbtn, 1);
@@ -1072,7 +1077,8 @@ xfce_mailwatch_get_configuration_page(XfceMailwatch *mailwatch)
 
     img = gtk_image_new_from_icon_name("list-remove-symbolic",
             GTK_ICON_SIZE_BUTTON);
-    toolbtn = gtk_tool_button_new(img, "Remove");
+    toolbtn = gtk_tool_button_new(img, "_Remove");
+    gtk_tool_button_set_use_underline(GTK_TOOL_BUTTON(toolbtn), TRUE);
     gtk_widget_set_tooltip_text(GTK_WIDGET(toolbtn), _("Remove Mailbox"));
     gtk_widget_set_sensitive(GTK_WIDGET(toolbtn), FALSE);
     gtk_toolbar_insert(GTK_TOOLBAR(toolbar), toolbtn, 2);
