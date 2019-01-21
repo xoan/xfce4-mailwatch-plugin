@@ -614,16 +614,11 @@ mailwatch_click_command_focusout_cb(GtkWidget     *w,
 }
 
 static void
-mailwatch_log_window_response_cb(GtkDialog *dialog,
-                                 gint       response,
-                                 gpointer   user_data)
+mailwatch_log_clear_clicked_cb(GtkWidget *w,
+                               gpointer   user_data)
 {
-    if(response == XFCE_MAILWATCH_RESPONSE_CLEAR) {
-        GtkListStore *ls = user_data;
-        gtk_list_store_clear(ls);
-    } else {
-        gtk_widget_destroy(GTK_WIDGET(dialog));
-    }
+    GtkListStore *ls = user_data;
+    gtk_list_store_clear(ls);
 }
 
 static void
@@ -661,7 +656,10 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
                               gpointer   user_data )
 {
     XfceMailwatchPlugin     *mwp = user_data;
-    GtkWidget               *vbox, *scrollw, *treeview, *button;
+    GtkWidget               *vbox, *scrollw, *treeview, *button, *toolbar, *img;
+    GtkToolItem             *toolbtn;
+
+    GtkStyleContext         *context;
 
     if (mwp->log_dialog) {
         gtk_window_present(GTK_WINDOW(mwp->log_dialog));
@@ -676,28 +674,25 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
     mwp->log_dialog = gtk_dialog_new_with_buttons(_( "Mailwatch log" ),
                                                   GTK_WINDOW(gtk_widget_get_toplevel(widget)),
                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
-                                                  NULL, NULL);
-    gtk_window_set_default_size(GTK_WINDOW(mwp->log_dialog), 480, 240 );
-    gtk_button_box_set_layout(GTK_BUTTON_BOX(exo_gtk_dialog_get_action_area(GTK_DIALOG(mwp->log_dialog))),
-                              GTK_BUTTONBOX_EDGE);
-    g_signal_connect(G_OBJECT(mwp->log_dialog), "response",
-                     G_CALLBACK(mailwatch_log_window_response_cb), mwp->loglist);
+                                                  "_Close", GTK_RESPONSE_ACCEPT,
+                                                  NULL);
+    gtk_window_set_default_size(GTK_WINDOW(mwp->log_dialog), 480, 240);
     g_signal_connect_swapped(G_OBJECT(mwp->log_dialog), "destroy",
                      G_CALLBACK(mailwatch_zero_pointer), &mwp->log_dialog);
 
-    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
-    gtk_container_set_border_width(GTK_CONTAINER(vbox), BORDER/2);
+    vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    gtk_container_set_border_width(GTK_CONTAINER(vbox), BORDER);
     gtk_widget_show(vbox);
     gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(mwp->log_dialog))),
                        vbox, TRUE, TRUE, 0);
 
     scrollw = gtk_scrolled_window_new( NULL, NULL );
-    gtk_widget_show( scrollw );
     gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW( scrollw ),
                                     GTK_POLICY_AUTOMATIC,
                                     GTK_POLICY_AUTOMATIC );
     gtk_scrolled_window_set_shadow_type( GTK_SCROLLED_WINDOW( scrollw ),
                                          GTK_SHADOW_IN );
+    gtk_widget_show( scrollw );
     gtk_box_pack_start( GTK_BOX( vbox ), scrollw, TRUE, TRUE, 0 );
 
     treeview = gtk_tree_view_new_with_model( GTK_TREE_MODEL( mwp->loglist ) );
@@ -728,20 +723,27 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
     gtk_widget_show( treeview );
     gtk_container_add( GTK_CONTAINER( scrollw ), treeview );
 
-    button = gtk_button_new_with_mnemonic(_("C_lear"));
-    gtk_button_set_image(GTK_BUTTON(button),
-                         gtk_image_new_from_icon_name("edit-clear-symbolic",
-                                                      GTK_ICON_SIZE_BUTTON));
-    gtk_widget_show( button );
-    gtk_dialog_add_action_widget(GTK_DIALOG(mwp->log_dialog), button,
-                                 XFCE_MAILWATCH_RESPONSE_CLEAR);
+    toolbar = gtk_toolbar_new();
+    gtk_toolbar_set_style(GTK_TOOLBAR(toolbar), GTK_TOOLBAR_ICONS);
+    gtk_toolbar_set_icon_size(GTK_TOOLBAR(toolbar),
+            GTK_ICON_SIZE_SMALL_TOOLBAR);
+    context = gtk_widget_get_style_context(toolbar);
+    gtk_style_context_add_class(context, "inline-toolbar");
+    gtk_box_pack_start(GTK_BOX(vbox), toolbar, FALSE, FALSE, 0);
 
-    button = gtk_button_new_with_mnemonic(_("_Close"));
-    gtk_widget_show( button );
-    gtk_dialog_add_action_widget(GTK_DIALOG(mwp->log_dialog), button,
-                                 GTK_RESPONSE_ACCEPT);
+    img = gtk_image_new_from_icon_name("edit-clear-symbolic",
+            GTK_ICON_SIZE_BUTTON);
+    toolbtn = gtk_tool_button_new(img, "C_lear");
+    gtk_tool_button_set_use_underline(GTK_TOOL_BUTTON(toolbtn), TRUE);
+    gtk_widget_set_tooltip_text(GTK_WIDGET(toolbtn), _("Clear Log"));
+    gtk_toolbar_insert(GTK_TOOLBAR(toolbar), toolbtn, 2);
+    g_signal_connect(G_OBJECT(toolbtn), "clicked",
+            G_CALLBACK(mailwatch_log_clear_clicked_cb), mwp->loglist);
 
-    gtk_widget_show(mwp->log_dialog);
+    gtk_widget_show_all(toolbar);
+
+    gtk_dialog_run(GTK_DIALOG(mwp->log_dialog));
+    gtk_widget_destroy(mwp->log_dialog);
 }
 
 static gboolean
