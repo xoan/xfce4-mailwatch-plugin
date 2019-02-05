@@ -442,7 +442,7 @@ mailwatch_create(XfcePanelPlugin *plugin)
         xfce_message_dialog(NULL, _("Xfce Mailwatch"), "dialog-error",
                             _("The mailwatch applet cannot be added to the panel."),
                             _("It is possible that your version of GLib does not have threads support."),
-                            _("_Close"), GTK_RESPONSE_ACCEPT,
+                            "gtk-lose", GTK_RESPONSE_ACCEPT,
                             NULL);
         g_free(mwp);
         return NULL;
@@ -674,7 +674,7 @@ mailwatch_view_log_clicked_cb(GtkWidget *widget,
     mwp->log_dialog = gtk_dialog_new_with_buttons(_( "Mailwatch log" ),
                                                   GTK_WINDOW(gtk_widget_get_toplevel(widget)),
                                                   GTK_DIALOG_DESTROY_WITH_PARENT,
-                                                  "_Close", GTK_RESPONSE_ACCEPT,
+                                                  "gtk-close", GTK_RESPONSE_ACCEPT,
                                                   NULL);
     gtk_window_set_default_size(GTK_WINDOW(mwp->log_dialog), 480, 240);
     g_signal_connect_swapped(G_OBJECT(mwp->log_dialog), "destroy",
@@ -791,8 +791,8 @@ mailwatch_iconbtn_clicked_cb(GtkWidget           *w,
     toplevel = gtk_widget_get_toplevel(w);
     chooser = exo_icon_chooser_dialog_new (_("Select Icon"),
                                            GTK_WINDOW(gtk_widget_get_toplevel(toplevel)),
-                                           _("_Cancel"), GTK_RESPONSE_CANCEL,
-                                           _("_OK"), GTK_RESPONSE_ACCEPT,
+                                           "gtk-cancel", GTK_RESPONSE_CANCEL,
+                                           "gtk-ok", GTK_RESPONSE_ACCEPT,
                                            NULL);
     gtk_dialog_set_default_response(GTK_DIALOG(chooser), GTK_RESPONSE_ACCEPT);
     /* Preselect actually used icon */
@@ -887,8 +887,8 @@ mailwatch_create_options(XfcePanelPlugin     *plugin,
     dlg = xfce_titled_dialog_new_with_buttons(_("Mail Watcher"),
                                               GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(plugin))),
                                               GTK_DIALOG_DESTROY_WITH_PARENT,
-                                              _("_Close"), GTK_RESPONSE_ACCEPT,
-                                              _("_Help"), GTK_RESPONSE_HELP,
+                                              "gtk-close", GTK_RESPONSE_ACCEPT,
+                                              "gtk-help", GTK_RESPONSE_HELP,
                                               NULL);
     g_signal_connect(G_OBJECT(dlg), "response",
                      G_CALLBACK(mailwatch_dialog_response), mwp);

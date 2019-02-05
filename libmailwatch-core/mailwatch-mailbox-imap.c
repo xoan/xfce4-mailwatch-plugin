@@ -1422,14 +1422,14 @@ imap_config_newmailfolders_btn_clicked_cb(GtkWidget *w, gpointer user_data)
                             "server, username, and probably password are set. "
                             " Also be sure to check any security settings in "
                             "the Advanced dialog."),
-                            _("_Close"), GTK_RESPONSE_ACCEPT,
+                            "gtk-close", GTK_RESPONSE_ACCEPT,
                             NULL);
         return;
     }
 
     dlg = gtk_dialog_new_with_buttons(_("Set New Mail Folders"), toplevel,
                                       GTK_DIALOG_DESTROY_WITH_PARENT,
-                                      _("_Close"), GTK_RESPONSE_ACCEPT,
+                                      "gtk-close", GTK_RESPONSE_ACCEPT,
                                       NULL);
     imailbox->folder_tree_dialog = dlg;
     topvbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, BORDER/2);
@@ -1625,7 +1625,7 @@ imap_config_advanced_btn_clicked_cb(GtkWidget *w, gpointer user_data)
     dlg = gtk_dialog_new_with_buttons(_("Advanced IMAP Options"),
                                         GTK_WINDOW(gtk_widget_get_toplevel(w)),
                                         GTK_DIALOG_DESTROY_WITH_PARENT,
-                                        _("_Close"), GTK_RESPONSE_ACCEPT,
+                                        "gtk-close", GTK_RESPONSE_ACCEPT,
                                         NULL);
     gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
 

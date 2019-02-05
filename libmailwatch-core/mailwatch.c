@@ -653,14 +653,14 @@ config_run_addedit_window(const gchar *title, GtkWindow *parent,
         /* add window */
         dlg = gtk_dialog_new_with_buttons(title, parent,
                                           GTK_DIALOG_DESTROY_WITH_PARENT,
-                                          _("_Cancel"), GTK_RESPONSE_CANCEL,
-                                          _("_OK"), GTK_RESPONSE_ACCEPT,
+                                          "gtk-cancel", GTK_RESPONSE_CANCEL,
+                                          "gtk-ok", GTK_RESPONSE_ACCEPT,
                                           NULL);
     } else {
         /* edit window */
         dlg = gtk_dialog_new_with_buttons(title, parent,
                                           GTK_DIALOG_DESTROY_WITH_PARENT,
-                                          _("_Close"), GTK_RESPONSE_ACCEPT,
+                                          "gtk-close", GTK_RESPONSE_ACCEPT,
                                           NULL);
     }
     gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
@@ -696,7 +696,7 @@ config_run_addedit_window(const gchar *title, GtkWindow *parent,
                 xfce_message_dialog(GTK_WINDOW(dlg), _("Mailwatch"),
                                     "dialog-error", _("Mailbox name required."),
                                     _("Please enter a name for the mailbox."),
-                                    _("_Close"), GTK_RESPONSE_ACCEPT,
+                                    "gtk-close", GTK_RESPONSE_ACCEPT,
                                     NULL);
                 if(*new_mailbox_name) {
                     g_free(*new_mailbox_name);
@@ -795,8 +795,8 @@ config_ask_new_mailbox_type(XfceMailwatch *mailwatch, GtkWindow *parent)
 
     dlg = gtk_dialog_new_with_buttons(_("Select Mailbox Type"), parent,
                                       GTK_DIALOG_DESTROY_WITH_PARENT,
-                                      _("_Cancel"), GTK_RESPONSE_CANCEL,
-                                      _("_OK"), GTK_RESPONSE_ACCEPT,
+                                      "gtk-cancel", GTK_RESPONSE_CANCEL,
+                                      "gtk-ok", GTK_RESPONSE_ACCEPT,
                                       NULL);
     gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_ACCEPT);
     gtk_window_set_default_size(GTK_WINDOW(dlg), 0, -1 );
@@ -926,8 +926,8 @@ config_remove_btn_clicked_cb(GtkWidget *w, XfceMailwatch *mailwatch)
                                _("Are you sure?"),
                                _("Removing a mailbox will discard all settings, "
                                "and cannot be undone."),
-                               _("Cancel"), GTK_RESPONSE_CANCEL,
-                               _("Remove"), GTK_RESPONSE_ACCEPT,
+                               "gtk-cancel", GTK_RESPONSE_CANCEL,
+                               "gtk-remove", GTK_RESPONSE_ACCEPT,
                                NULL);
     if(resp != GTK_RESPONSE_ACCEPT)
         return;
